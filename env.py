@@ -27,7 +27,7 @@ class Environment(tk.Tk, object):
         super(Environment, self).__init__()
         self.action_space = ['up', 'down', 'left', 'right']
         self.n_actions = len(self.action_space)
-        self.title('Q-learning - Environment')
+        self.title('SARSA - learning - Environment')
         self.geometry('{0}x{1}'.format(env_height * pixels, env_height * pixels))
         self.build_environment()
 
@@ -69,99 +69,58 @@ class Environment(tk.Tk, object):
 
         # Creating objects of  Obstacles
         # Obstacle type 1 - road closed1
-        img_obstacle1 = Image.open("images/bicycle.png")
+        img_obstacle1 = Image.open("images/square.png")
         self.obstacle1_object = ImageTk.PhotoImage(img_obstacle1)
-        # Obstacle type 2 - tree1
-        img_obstacle2 = Image.open("images/circular.png")
-        self.obstacle2_object = ImageTk.PhotoImage(img_obstacle2)
-        # Obstacle type 3 - tree2
-        img_obstacle3 = Image.open("images/cycle.png")
-        self.obstacle3_object = ImageTk.PhotoImage(img_obstacle3)
-        # Obstacle type 4 - building1
-        img_obstacle4 = Image.open("images/destination.png")
-        self.obstacle4_object = ImageTk.PhotoImage(img_obstacle4)
-        # Obstacle type 5 - building2
-        img_obstacle5 = Image.open("images/stone.png")
-        self.obstacle5_object = ImageTk.PhotoImage(img_obstacle5)
-        # Obstacle type 6 - road closed2
-        img_obstacle6 = Image.open("images/no-entry.png")
-        self.obstacle6_object = ImageTk.PhotoImage(img_obstacle6)
-        # Obstacle type 7 - road closed3
-        img_obstacle7 = Image.open("images/no-entry.png")
-        self.obstacle7_object = ImageTk.PhotoImage(img_obstacle7)
-        # Obstacle type 8 - traffic lights
-        img_obstacle8 = Image.open("images/hill.png")
-        self.obstacle8_object = ImageTk.PhotoImage(img_obstacle8)
-        # Obstacle type 9 - pedestrian
-        img_obstacle9 = Image.open("images/tent.png")
-        self.obstacle9_object = ImageTk.PhotoImage(img_obstacle9)
-        # Obstacle type 10 - shop
-        img_obstacle10 = Image.open("images/stone.png")
-        self.obstacle10_object = ImageTk.PhotoImage(img_obstacle10)
-        # Obstacle type 11 - bank1
-        img_obstacle11 = Image.open("images/cycle.png")
-        self.obstacle11_object = ImageTk.PhotoImage(img_obstacle11)
-        # Obstacle type 12 - bank2
-        img_obstacle12 = Image.open("images/circular.png")
-        self.obstacle12_object = ImageTk.PhotoImage(img_obstacle12)
-
+        
         # Creating obstacles themselves
         # Obstacles from 1 to 22
-        self.obstacle1 = self.canvas_widget.create_image(pixels * 4, pixels * 7, anchor='nw', image=self.obstacle2_object)
+        #self.obstacle1 = self.canvas_widget.create_image(pixels * 5, pixels * 5, anchor='nw', image=self.obstacle1_object)
         # Obstacle 2
-        self.obstacle2 = self.canvas_widget.create_image(0, pixels * 2, anchor='nw', image=self.obstacle6_object)
+        #self.obstacle2 = self.canvas_widget.create_image(0, pixels * 2, anchor='nw', image=self.obstacle6_object)
         # Obstacle 3
-        self.obstacle3 = self.canvas_widget.create_image(pixels, 0, anchor='nw', image=self.obstacle5_object)
+        #self.obstacle3 = self.canvas_widget.create_image(pixels, 0, anchor='nw', image=self.obstacle5_object)
         # Obstacle 4
-        self.obstacle4 = self.canvas_widget.create_image(pixels * 3, pixels * 7, anchor='nw', image=self.obstacle2_object)
+        #self.obstacle4 = self.canvas_widget.create_image(pixels * 3, pixels * 7, anchor='nw', image=self.obstacle2_object)
         # Obstacle 5
-        self.obstacle5 = self.canvas_widget.create_image(pixels * 4, 1, anchor='nw', image=self.obstacle12_object)
+        #self.obstacle5 = self.canvas_widget.create_image(pixels * 4, 1, anchor='nw', image=self.obstacle12_object)
         # Obstacle 6
-        self.obstacle6 = self.canvas_widget.create_image(pixels * 5, pixels * 9, anchor='nw', image=self.obstacle7_object)
+        #self.obstacle6 = self.canvas_widget.create_image(pixels * 5, pixels * 9, anchor='nw', image=self.obstacle7_object)
         # Obstacle 7
-        self.obstacle7 = self.canvas_widget.create_image(pixels * 7, pixels * 3, anchor='nw', image=self.obstacle9_object)
+        #self.obstacle7 = self.canvas_widget.create_image(pixels * 7, pixels * 3, anchor='nw', image=self.obstacle9_object)
         # Obstacle 8
-        self.obstacle8 = self.canvas_widget.create_image(pixels * 6, pixels, anchor='nw', image=self.obstacle10_object)
+        #self.obstacle8 = self.canvas_widget.create_image(pixels * 6, pixels, anchor='nw', image=self.obstacle10_object)
         # Obstacle 9
-        self.obstacle9 = self.canvas_widget.create_image(pixels * 8, pixels * 9, anchor='nw', image=self.obstacle4_object)
+        #self.obstacle9 = self.canvas_widget.create_image(pixels * 8, pixels * 9, anchor='nw', image=self.obstacle4_object)
         # Obstacle 10
-        self.obstacle10 = self.canvas_widget.create_image(pixels * 9, pixels * 10, anchor='nw', image=self.obstacle4_object)
-        # Obstacle 11
-        #self.obstacle11 = self.canvas_widget.create_image(pixels * 5, pixels * 6, anchor='nw', image=self.obstacle4_object)
-        # Obstacle 12
-        #self.obstacle12 = self.canvas_widget.create_image(pixels * 5, pixels * 7, anchor='nw', image=self.obstacle4_object)
+        #self.obstacle10 = self.canvas_widget.create_image(pixels * 9, pixels * 10, anchor='nw', image=self.obstacle4_object)
         # Obstacle 13
-        self.obstacle13 = self.canvas_widget.create_image(0, pixels * 8, anchor='nw', image=self.obstacle3_object)
+        #self.obstacle13 = self.canvas_widget.create_image(0, pixels * 8, anchor='nw', image=self.obstacle3_object)
         # Obstacle 14
-        self.obstacle14 = self.canvas_widget.create_image(pixels * 7, pixels * 5, anchor='nw', image=self.obstacle8_object)
+        #self.obstacle14 = self.canvas_widget.create_image(pixels * 7, pixels * 5, anchor='nw', image=self.obstacle8_object)
         # Obstacle 15
-        self.obstacle15 = self.canvas_widget.create_image(pixels * 2, pixels * 4, anchor='nw', image=self.obstacle1_object)
+        #self.obstacle15 = self.canvas_widget.create_image(pixels * 2, pixels * 4, anchor='nw', image=self.obstacle1_object)
         # Obstacle 16
-        self.obstacle16 = self.canvas_widget.create_image(pixels * 8, 0, anchor='nw', image=self.obstacle3_object)
+        #self.obstacle16 = self.canvas_widget.create_image(pixels * 8, 0, anchor='nw', image=self.obstacle3_object)
         # Obstacle 17
-        self.obstacle17 = self.canvas_widget.create_image(pixels * 9, pixels * 8, anchor='nw', image=self.obstacle4_object)
+        #self.obstacle17 = self.canvas_widget.create_image(pixels * 9, pixels * 8, anchor='nw', image=self.obstacle4_object)
         # Obstacle 18
-        self.obstacle18 = self.canvas_widget.create_image(pixels * 5, pixels * 4, anchor='nw', image=self.obstacle11_object)
+        #self.obstacle18 = self.canvas_widget.create_image(pixels * 5, pixels * 4, anchor='nw', image=self.obstacle11_object)
         # Obstacle 19
-        self.obstacle19 = self.canvas_widget.create_image(pixels * 10, pixels * 3, anchor='nw', image=self.obstacle8_object)
-        # Obstacle 20
-        #self.obstacle20 = self.canvas_widget.create_image(pixels * 7, pixels * 6, anchor='nw', image=self.obstacle4_object)
-        # Obstacle 21
-        #self.obstacle21 = self.canvas_widget.create_image(pixels * 7, pixels * 5, anchor='nw', image=self.obstacle4_object)
+        #self.obstacle19 = self.canvas_widget.create_image(pixels * 10, pixels * 3, anchor='nw', image=self.obstacle8_object)
         # Obstacle 22
-        self.obstacle22 = self.canvas_widget.create_image(pixels * 6, pixels * 7, anchor='nw', image=self.obstacle2_object)
+        #self.obstacle22 = self.canvas_widget.create_image(pixels * 6, pixels * 7, anchor='nw', image=self.obstacle2_object)
 
         # Final Point
         img_flag = Image.open("images/flag.png")
         self.flag_object = ImageTk.PhotoImage(img_flag)
-        self.flag = self.canvas_widget.create_image(pixels * 9, pixels * 9, anchor='nw', image=self.flag_object)
+        self.flag = self.canvas_widget.create_image(pixels * 11, pixels * 5, anchor='nw', image=self.flag_object)
 
         # Uploading the image of Mobile Robot
         img_robot = Image.open("images/agent1.png")
         self.robot = ImageTk.PhotoImage(img_robot)
 
         # Creating an agent with photo of Mobile Robot
-        self.agent = self.canvas_widget.create_image(0, 0, anchor='nw', image=self.robot)
+        self.agent = self.canvas_widget.create_image(0, pixels*5, anchor='nw', image=self.robot)
 
         # Packing everything
         self.canvas_widget.pack()
@@ -173,7 +132,7 @@ class Environment(tk.Tk, object):
 
         # Updating agent
         self.canvas_widget.delete(self.agent)
-        self.agent = self.canvas_widget.create_image(0, 0, anchor='nw', image=self.robot)
+        self.agent = self.canvas_widget.create_image(0, pixels*5, anchor='nw', image=self.robot)
 
         # # Clearing the dictionary and the i
         self.d = {}
@@ -246,35 +205,37 @@ class Environment(tk.Tk, object):
             if len(self.d) > self.longest:
                 self.longest = len(self.d)
 
-        elif next_state in [self.canvas_widget.coords(self.obstacle1),
-                            self.canvas_widget.coords(self.obstacle2),
-                            self.canvas_widget.coords(self.obstacle3),
-                            self.canvas_widget.coords(self.obstacle4),
-                            self.canvas_widget.coords(self.obstacle5),
-                            self.canvas_widget.coords(self.obstacle6),
-                            self.canvas_widget.coords(self.obstacle7),
-                            self.canvas_widget.coords(self.obstacle8),
-                            self.canvas_widget.coords(self.obstacle9),
-                            self.canvas_widget.coords(self.obstacle10),
-                            #self.canvas_widget.coords(self.obstacle11),
-                            #self.canvas_widget.coords(self.obstacle12),
-                            self.canvas_widget.coords(self.obstacle13),
-                            self.canvas_widget.coords(self.obstacle14),
-                            self.canvas_widget.coords(self.obstacle15),
-                            self.canvas_widget.coords(self.obstacle16),
-                            self.canvas_widget.coords(self.obstacle17),
-                            self.canvas_widget.coords(self.obstacle18),
-                            self.canvas_widget.coords(self.obstacle19),
-                            #self.canvas_widget.coords(self.obstacle20),
-                            #self.canvas_widget.coords(self.obstacle21),
-                            self.canvas_widget.coords(self.obstacle22)]:
-            reward = -1
-            done = True
-            next_state = 'obstacle'
-
-            # Clearing the dictionary and the i
-            self.d = {}
-            self.i = 0
+        #elif next_state in [
+        #                    self.canvas_widget.coords(self.obstacle1)]:
+        #                   self.canvas_widget.coords(self.obstacle2),
+        #                   self.canvas_widget.coords(self.obstacle3),
+        #                    self.canvas_widget.coords(self.obstacle4),
+        #                   self.canvas_widget.coords(self.obstacle5),
+        #                   self.canvas_widget.coords(self.obstacle6),
+        #                   self.canvas_widget.coords(self.obstacle7),
+        #                   self.canvas_widget.coords(self.obstacle8),
+        #                    self.canvas_widget.coords(self.obstacle9)
+        #                   self.canvas_widget.coords(self.obstacle10),
+        #                   #self.canvas_widget.coords(self.obstacle11),
+        #                   #self.canvas_widget.coords(self.obstacle12),
+        #                   self.canvas_widget.coords(self.obstacle13),
+        #                    self.canvas_widget.coords(self.obstacle14)
+        #                   self.canvas_widget.coords(self.obstacle15),
+        #                   self.canvas_widget.coords(self.obstacle16),
+        #                   self.canvas_widget.coords(self.obstacle17),
+        #                   self.canvas_widget.coords(self.obstacle18),
+        #                   self.canvas_widget.coords(self.obstacle19),
+        #                   #self.canvas_widget.coords(self.obstacle20),
+        #                   #self.canvas_widget.coords(self.obstacle21),
+        #                   self.canvas_widget.coords(self.obstacle22)]:
+        
+        #    reward = -1
+        #    done = True
+        #    next_state = 'obstacle'
+#
+        # Clearing the dictionary and the i
+        #    self.d = {}
+        #    self.i = 0
 
         else:
             reward = 0
@@ -297,7 +258,7 @@ class Environment(tk.Tk, object):
         print('The longest route:', self.longest)
 
         # Creating initial point
-        origin = np.array([20, 20])
+        origin = np.array([20, 220])
         self.initial_point = self.canvas_widget.create_oval(
             origin[0] - 5, origin[1] - 5,
             origin[0] + 5, origin[1] + 5,
@@ -306,7 +267,7 @@ class Environment(tk.Tk, object):
         # Filling the route
         for j in range(len(self.f)):
             # Showing the coordinates of the final route
-            print(self.f[j])
+            ## print(self.f[j])
             self.track = self.canvas_widget.create_oval(
                 self.f[j][0] + origin[0] - 5, self.f[j][1] + origin[0] - 5,
                 self.f[j][0] + origin[0] + 5, self.f[j][1] + origin[0] + 5,
