@@ -12,7 +12,7 @@ from env import final_states
 
 # Creating class for the Q-learning table
 class QLearningTable:
-    def __init__(self, actions, learning_rate=0.01, reward_decay=1.4, e_greedy=0.6):
+    def __init__(self, actions, learning_rate=0.01, reward_decay=0.7, e_greedy=0.5):
         # List of actions
         self.actions = actions
         # Learning rate

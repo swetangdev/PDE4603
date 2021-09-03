@@ -75,8 +75,8 @@ if __name__ == "__main__":
     # Calling for the main algorithm
     RL = SarsaTable(actions=list(range(env.n_actions)),
                     learning_rate=0.1,
-                    reward_decay=0.9,
-                    e_greedy=0.9)
+                    reward_decay=0.2,
+                    e_greedy=0.2)
     # Running the main loop with Episodes by calling the function update()
     env.after(100, update)  # Or just update()
     env.mainloop()

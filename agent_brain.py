@@ -25,7 +25,7 @@ class SarsaTable:
         self.q_table = pd.DataFrame(columns=self.actions, dtype=np.float64)
         # Creating Q-table for cells of the final route
         self.q_table_final = pd.DataFrame(columns=self.actions, dtype=np.float64)
-
+        print('R: ', reward_decay, 'E: ', e_greedy)
     # Function for choosing the action for the agent
     def choose_action(self, observation):
         # Checking if the state exists in the table

@@ -74,7 +74,7 @@ class Environment(tk.Tk, object):
         
         # Creating obstacles themselves
         # Obstacles from 1 to 22
-        #self.obstacle1 = self.canvas_widget.create_image(pixels * 5, pixels * 5, anchor='nw', image=self.obstacle1_object)
+        self.obstacle1 = self.canvas_widget.create_image(pixels * 5, pixels * 5, anchor='nw', image=self.obstacle1_object)
         # Obstacle 2
         #self.obstacle2 = self.canvas_widget.create_image(0, pixels * 2, anchor='nw', image=self.obstacle6_object)
         # Obstacle 3
@@ -205,8 +205,8 @@ class Environment(tk.Tk, object):
             if len(self.d) > self.longest:
                 self.longest = len(self.d)
 
-        #elif next_state in [
-        #                    self.canvas_widget.coords(self.obstacle1)]:
+        elif next_state in [
+                            self.canvas_widget.coords(self.obstacle1)]:
         #                   self.canvas_widget.coords(self.obstacle2),
         #                   self.canvas_widget.coords(self.obstacle3),
         #                    self.canvas_widget.coords(self.obstacle4),
@@ -229,13 +229,13 @@ class Environment(tk.Tk, object):
         #                   #self.canvas_widget.coords(self.obstacle21),
         #                   self.canvas_widget.coords(self.obstacle22)]:
         
-        #    reward = -1
-        #    done = True
-        #    next_state = 'obstacle'
+            reward = -1
+            done = True
+            next_state = 'obstacle'
 #
         # Clearing the dictionary and the i
-        #    self.d = {}
-        #    self.i = 0
+            self.d = {}
+            self.i = 0
 
         else:
             reward = 0
