@@ -1,32 +1,28 @@
-# File: agent_brain.py
-# Description: Creating brain for the agent based on the Q-learning
-# Environment: PyCharm and Anaconda environment
-
+# SARSA algorithm
 
 # Importing libraries
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-# Importing function from the env.py
-from env import final_states
 
-# Creating class for the Q-learning table
-class QLearningTable:
-    def __init__(self, actions, learning_rate=0.01, reward_decay=0.7, e_greedy=0.5):
+# Importing function from the env.py
+from maze import final_states
+
+# class for the SarsaTable
+class SarsaTable:
+    def __init__(self, actions, gamma = 0.9, epsilon = 0.9, learning_rate = 0.01):
         # List of actions
         self.actions = actions
         # Learning rate
         self.lr = learning_rate
         # Value of gamma
-        self.gamma = reward_decay
+        self.gamma = gamma
         # Value of epsilon
-        self.epsilon = e_greedy
+        self.epsilon = epsilon
         # Creating full Q-table for all cells
         self.q_table = pd.DataFrame(columns=self.actions, dtype=np.float64)
         # Creating Q-table for cells of the final route
         self.q_table_final = pd.DataFrame(columns=self.actions, dtype=np.float64)
-        print('R: ', reward_decay, 'E: ', e_greedy)
-
+        
     # Function for choosing the action for the agent
     def choose_action(self, observation):
         # Checking if the state exists in the table
@@ -43,7 +39,7 @@ class QLearningTable:
         return action
 
     # Function for learning and updating Q-table with new knowledge
-    def learn(self, state, action, reward, next_state):
+    def learn(self, state, action, reward, next_state, next_action):
         # Checking if the next step exists in the Q-table
         self.check_state_exist(next_state)
 
@@ -52,7 +48,7 @@ class QLearningTable:
 
         # Checking if the next state is free or it is obstacle or goal
         if next_state != 'goal' or next_state != 'obstacle':
-            q_target = reward + self.gamma * self.q_table.loc[next_state, :].max()
+            q_target = reward + self.gamma * self.q_table.loc[next_state, next_action]
         else:
             q_target = reward
 
@@ -85,47 +81,14 @@ class QLearningTable:
                 if self.q_table.index[j] == state:
                     self.q_table_final.loc[state, :] = self.q_table.loc[state, :]
 
-        print()
-        print('Length of final Q-table =', len(self.q_table_final.index))
+        #print()
+        #print('Length of final Q-table =', len(self.q_table_final.index))
         #print('Final Q-table with values from the final route:')
         #print(self.q_table_final)
 
-        print()
-        print('Length of full Q-table =', len(self.q_table.index))
+        #print()
+        #print('Length of full Q-table =', len(self.q_table.index))
         #print('Full Q-table:')
         #print(self.q_table)
 
-    # Plotting the results for the number of steps
-    def plot_results(self, steps, cost):
-        #
-        f, (ax1, ax2) = plt.subplots(nrows=1, ncols=2)
-        #
-        ax1.plot(np.arange(len(steps)), steps, 'b')
-        ax1.set_xlabel('Episode')
-        ax1.set_ylabel('Steps')
-        ax1.set_title('Episode via steps')
-
-        #
-        ax2.plot(np.arange(len(cost)), cost, 'r')
-        ax2.set_xlabel('Episode')
-        ax2.set_ylabel('Cost')
-        ax2.set_title('Episode via cost')
-
-        plt.tight_layout()  # Function to make distance between figures
-
-        #
-        plt.figure()
-        plt.plot(np.arange(len(steps)), steps, 'b')
-        plt.title('Episode via steps')
-        plt.xlabel('Episode')
-        plt.ylabel('Steps')
-
-        #
-        plt.figure()
-        plt.plot(np.arange(len(cost)), cost, 'r')
-        plt.title('Episode via cost')
-        plt.xlabel('Episode')
-        plt.ylabel('Cost')
-
-        # Showing the plots
-        plt.show()
+        return len(self.q_table_final.index), len(self.q_table.index)

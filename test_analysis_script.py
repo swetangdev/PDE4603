@@ -14,7 +14,7 @@ csv_writer.writerow(row) '''
 
 
 import csv
-
+from datetime import datetime
     
 
 # csv header
@@ -27,7 +27,8 @@ rows = [
     ['American Samoa', 199, 'AS', 'ASM']
 ]
 
-with open('countries.csv', 'w', encoding='UTF8', newline='') as f:
+date = str(datetime.now().strftime("%d_%m_%Y-%I_%M_%p"))
+with open(str('countries_'+date+'.csv'), 'w', encoding='UTF8', newline='') as f:
     writer = csv.writer(f)
     writer.writerow(fieldnames)
     writer.writerows(rows)

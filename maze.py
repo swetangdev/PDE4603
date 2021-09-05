@@ -4,6 +4,7 @@ import numpy as np  # for data manipulation in matrix form
 import tkinter as tk # for making GUI
 import time # for time calculation
 from PIL import Image, ImageTk
+from numpy.core.records import array
 
 # define the size of an environment, 12 x 12 maze with each of 20 pixels
 pixels = 40
@@ -15,13 +16,26 @@ total_env_width = env_width * pixels
 
 # Global variable for dictionary with coordinates for the final route
 a = {}
+environment_name = ''
 
 # class for environment 
 
 class Environment(tk.Tk, object):
-    def __init__(self):
+    def __init__(self, field):
         super(Environment, self).__init__()
         self.actions = ['up','down','left','right']
+
+        # using ternary condition check if Algo, Envi options are exist or set it default value
+        field['algo'] = 'R-Learning' if 'algo' not in field else field['algo']
+        field['envi'] = 'no-obstcle' if 'envi' not in field else field['envi']
+        
+        print('Chosen Evnironment: ', field['envi'])
+        
+        self.title(field['algo'] + ' - Environment')
+        
+        # set chosen environment
+        self.chosen_envi = field['envi']
+
         self.total_actions = len(self.actions)
         self.geometry('{0}x{1}'.format(total_env_height, total_env_width))
         self.create_environment()
@@ -54,10 +68,11 @@ class Environment(tk.Tk, object):
             x0, y0, x1, y1 = 0, row, env_height * pixels, row
             self.canvas_widget.create_line(x0, y0, x1, y1, fill='grey')
 
-        img_obstacle1 = Image.open("images/square.png")
-        self.obstacle1_object = ImageTk.PhotoImage(img_obstacle1)
-
-        self.obstacle1 = self.canvas_widget.create_image(pixels * 5, pixels * 5, anchor='nw', image=self.obstacle1_object)
+        # check if user has chosen obstacle environment, then add obstacle to environment
+        if self.chosen_envi == 'Obstacle':
+            img_obstacle1 = Image.open("images/square.png")
+            self.obstacle1_object = ImageTk.PhotoImage(img_obstacle1)
+            self.obstacle1 = self.canvas_widget.create_image(pixels * 5, pixels * 5, anchor='nw', image=self.obstacle1_object)
 
         # Final Point
         img_flag = Image.open("images/flag.png")
@@ -155,12 +170,13 @@ class Environment(tk.Tk, object):
             if len(self.d) > self.longest:
                 self.longest = len(self.d)
 
-        elif next_state in [
-                            self.canvas_widget.coords(self.obstacle1)]:
+        # check if user has chosen obstacle environment, then add obstacle to environment
+        
+        elif self.chosen_envi == 'Obstacle' and next_state in [self.canvas_widget.coords(self.obstacle1)]:
             reward = -1
             done = True
             next_state = 'obstacle'
-
+        
             # Clearing the dictionary and the i
             self.d = {}
             self.i = 0

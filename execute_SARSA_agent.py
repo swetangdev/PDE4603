@@ -1,12 +1,12 @@
 # Importing classes
 from datetime import datetime
 from maze import Environment
-from Q_learning_algorithm import QTable
+from SARSA_learning_algorithm import SarsaTable
 import csv
-import time
 
 shortest_route = 0
 longest_route = 0
+envi_options = ['no-obstacle', 'Obstacle']
 
 def exec_update(iterations = 1000):
     # Resulted list for the plotting Episodes via Steps
@@ -14,31 +14,36 @@ def exec_update(iterations = 1000):
     start_time = datetime.now()
     # Summed costs for all episodes in resulted list
     all_costs = []
+
     for episode in range(iterations): # also works with 100 iterations
         # Initial Observation
         observation = env.reset()
-    
+
         # Updating number of Steps for each Episode
         i = 0
 
         # Updating the cost for each episode
         cost = 0
 
+        # RL choose action based on observation
+        action = RL.choose_action(str(observation))
+
         while True:
             # Refreshing environment
             env.render()
 
-            # RL chooses action based on observation
-            action = RL.choose_action(str(observation))
-
             # RL takes an action and get the next observation and reward
             observation_, reward, done = env.step(action)
 
-            # RL learns from this transition and calculating the cost
-            cost += RL.learn(str(observation), action, reward, str(observation_))
+            # RL choose action based on next observation
+            action_ = RL.choose_action(str(observation_))
 
-            # Swapping the observations - current and next
+            # RL learns from the transition and calculating the cost
+            cost += RL.learn(str(observation), action, reward, str(observation_), action_)
+
+            # Swapping the observations and actions - current and next
             observation = observation_
+            action = action_
 
             # Calculating number of Steps in the current Episode
             i += 1
@@ -49,16 +54,20 @@ def exec_update(iterations = 1000):
                 steps += [i]
                 all_costs += [cost]
                 break
-            
+
     # Showing the final route
     shortest_route, longest_route = env.final()
     
     # Showing the Q-table with values for each action
     q_table_final, q_table = RL.print_q_table()
+    
+    print("total time:",datetime.now() - start_time)
 
+    # Showing the Q-table with values for each action
+    #RL.print_q_table()
     # Plotting the results
-    # RL.plot_results(steps, all_costs)
-    #env.clearFoundPath() 
+    #RL.plot_results(steps, all_costs)
+
     time_taken = datetime.now() - start_time
     print('Shortest: ', shortest_route, ' | Longest path: ', longest_route)
     print('Final Q Table: ', q_table_final, ' | Q Table: ', q_table)
@@ -67,17 +76,46 @@ def exec_update(iterations = 1000):
     return shortest_route, longest_route, q_table_final, q_table, time_taken
 
 
+def get_user_input():
+    print('Please enter your choice for environment')
+    print('0. Exit')
+    print('1. No Obstacle')
+    print('2. One Obstacle')
+    
+    choose_envi = int(input('Please enter your choice:'))
+    return choose_envi
+
 # Commands to be implemented after running this file
 if __name__ == "__main__":
+
+    # Getting and checking user input
+    while True:
+        try:
+            user_input = get_user_input()
+        except ValueError:
+            print("Sorry, I didn't understand that.")
+            continue
+        
+        if user_input > 2 or user_input < 0:
+            print("Sorry, please choose 0, 1 or 2.")
+            continue
+        elif user_input == 0:
+            exit()
+        else:
+            break
+
     # Calling for the environment
-    env = Environment()
-    '''  env = Environment()
+    env = Environment({ 'algo': 'SARSA-Learning', 'envi': envi_options[user_input-1]})
+
     # Calling for the main algorithm
-    RL = QTable(actions=list(range(env.total_actions)))
+    #RL = SarsaTable(actions=list(range(env.n_actions)),
+                    #learning_rate=0.1,
+                    #reward_decay=0.2,
+                    #e_greedy=0.2)
     # Running the main loop with Episodes by calling the function exec_update()
-    env.after(100, exec_update(10))  # Or just exec_update()
-    env.mainloop()
-'''
+    #env.after(100, exec_update)  # Or just exec_update()
+    #env.mainloop()
+
     # declaring head_routes_fields as heading in csv
     head_routes_fields = ['Route']
 
@@ -89,8 +127,8 @@ if __name__ == "__main__":
     q_table_rows = []
     routes_row_head = ['']
     q_table_row_head = ['']
-    gamma_array = [0.7, 0.6]
-    epsilon_array = [0.6, 0.5, 0.4]
+    gamma_array = [0.9, 0.8] #, 0.7, 0.6, 0.5]
+    epsilon_array = [0.9, 0.8] #, 0.7, 0.6, 0.5]
     
     for epsilon_item in range(len(epsilon_array)):
         # first row as epsilon values
@@ -118,11 +156,11 @@ if __name__ == "__main__":
             print(gamma_array[gamma_item], epsilon_array[epsilon_item])
             
             # making Q-table ready for exploration
-            RL = QTable( actions=list(range(env.total_actions)), gamma = gamma_array[gamma_item], epsilon = epsilon_array[epsilon_item] )
+            RL = SarsaTable( actions=list(range(env.total_actions)), gamma = gamma_array[gamma_item], epsilon = epsilon_array[epsilon_item], learning_rate=0.1 )
             
             # Running the main loop with Episodes by calling the function exec_update()
             #env.after(100, exec_update(10))  # Or just exec_update()
-            shortest_route, longest_route, q_table_final, q_table, time_taken = exec_update(10)
+            shortest_route, longest_route, q_table_final, q_table, time_taken = exec_update(1000)
             
             # storing all shortest route for each iteration to show in "row" format
             short_long_routes += [shortest_route, longest_route, time_taken]
@@ -152,7 +190,9 @@ if __name__ == "__main__":
     #end of execution
     env.mainloop()
     
-    with open('analysis.csv', 'w', encoding='UTF8', newline='') as f:
+    date = datetime.now().strftime("%Y_%m_%d-%I_%M_%p")
+
+    with open("SARSA_analysis_"+date+".csv", 'w', encoding='UTF8', newline='') as f:
         writer = csv.writer(f)
 
         writer.writerow(head_routes_fields)
