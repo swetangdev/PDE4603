@@ -27,6 +27,10 @@ rows = [
     ['American Samoa', 199, 'AS', 'ASM']
 ]
 
+fieldnames.insert(0, '00000')
+print(fieldnames)
+exit()
+
 date = str(datetime.now().strftime("%d_%m_%Y-%I_%M_%p"))
 with open(str('countries_'+date+'.csv'), 'w', encoding='UTF8', newline='') as f:
     writer = csv.writer(f)

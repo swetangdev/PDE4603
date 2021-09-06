@@ -104,89 +104,124 @@ if __name__ == "__main__":
     env.mainloop() '''
 
     # declaring head_routes_fields as heading in csv
-    head_routes_fields = ['Route']
+    #head_routes_fields = ['Route']
+    head_epsilon = ['']
 
     # declaring Q-table fields as heading
-    head_qTable_fields = ['Q-Table']
+    head_qTable_fields = ['XXXXXX']
 
     # declaring rows for storing dynamic outputs
-    routes_rows = []
-    q_table_rows = []
+    #routes_rows = []
+    short_rows = [] # table 1
+    long_rows = [] # table 2
+    time_rows = [] # table 3
+    q_table_rows = [] # table 4
+    
     routes_row_head = ['']
     q_table_row_head = ['']
+
     gamma_array = [0.9, 0.8, 0.7, 0.6, 0.5]
     epsilon_array = [0.9, 0.8, 0.7, 0.6, 0.5]
     
+    # loop to create heading for each table
     for epsilon_item in range(len(epsilon_array)):
         # first row as epsilon values
-        head_routes_fields += epsilon_array[epsilon_item], '', '' # head_routes_fields = Short-long routes,0.6,'',0.5,'' 
-        routes_row_head += 'Short', 'Long', 'Time'
+        #head_routes_fields += epsilon_array[epsilon_item], '', '' # head_routes_fields = Short-long routes,0.6,'',0.5,''
+        #routes_row_head += 'Short', 'Long', 'Time'
 
         # first row as epsilon values
         head_qTable_fields += epsilon_array[epsilon_item], '' # head_qTable_fields = Q-table | Final ,0.6,'',0.5,''
         q_table_row_head += 'Final', 'Full'
 
-    routes_rows += [routes_row_head]
+    #routes_rows += [routes_row_head]
+    # append second row as titles 'Final' 'Full'
     q_table_rows += [q_table_row_head]
 
 
     for gamma_item in range(len(gamma_array)):
         #set header for writing in CSV file - header will epsilon value
         
-        epsilon_temp = 0
-        
         # declalring shortest route array for storing all routes 
         # found using Combination of "one Gamma with multiple Epsilon"
-        short_long_routes = []
-        q_tables = []
-        for epsilon_item in range(len(epsilon_array)):
-            print(gamma_array[gamma_item], epsilon_array[epsilon_item])
-            
-            # making Q-table ready for exploration
-            RL = QTable( actions=list(range(env.total_actions)), gamma = gamma_array[gamma_item], epsilon = epsilon_array[epsilon_item] )
-            
-            # Running the main loop with Episodes by calling the function exec_update()
-            #env.after(100, exec_update(10))  # Or just exec_update()
-            shortest_route, longest_route, q_table_final, q_table, time_taken = exec_update(1000)
-            
-            # storing all shortest route for each iteration to show in "row" format
-            short_long_routes += [shortest_route, longest_route, time_taken]
-
-            # storing all shortest route for each iteration to show in "row" format
-            q_tables += [q_table_final, q_table]
-
+        # short_long_routes = []
         
-        # add "first" element as "Gamma" value for each row
-        short_long_routes.insert(0, gamma_array[gamma_item])
+        # for one Gamma run 10 trials
+        for trial in range(1,6):
+            short_routes = [] # table 1
+            long_routes = [] # table 2
+            total_time = [] # table 3
+            q_tables = [] # table 4
+            for epsilon_item in range(len(epsilon_array)):
+                print(gamma_array[gamma_item], epsilon_array[epsilon_item])
+                
+                # making Q-table ready for exploration
+                RL = QTable( actions=list(range(env.total_actions)), gamma = gamma_array[gamma_item], epsilon = epsilon_array[epsilon_item] )
+                
+                # Running the main loop with Episodes by calling the function exec_update()
+                #env.after(100, exec_update(10))  # Or just exec_update()
+                shortest_route, longest_route, q_table_final, q_table, time_taken = exec_update(500)
+                
+                # storing all shortest route for each iteration to show in "row" format
+                short_routes += [shortest_route] # table 1
+                long_routes += [longest_route] # table 2
+                total_time += [time_taken] # table 3
+                q_tables += [q_table_final, q_table] # table 4
 
-        # collecting rows
-        routes_rows += [short_long_routes]
+            
+            # add "first" element as "Gamma" value for each row
+            #short_long_routes.insert(0, gamma_array[gamma_item])
+            short_routes.insert(0, gamma_array[gamma_item]) # table 1... 0.9 __ __ __ __
+            long_routes.insert(0, gamma_array[gamma_item]) # table 2... 0.9 __ __ __ __
+            total_time.insert(0, gamma_array[gamma_item]) # table 3... 0.9 __ __ __ __
+            q_tables.insert(0, gamma_array[gamma_item]) # table 4... 0.9 __ __ __ __
 
-        # -----------------------------------------------------------
-        # ----------------------- q table rows ----------------------
-        # -----------------------------------------------------------
-        
-        # add "first" element as "Gamma" value for each row
-        q_tables.insert(0, gamma_array[gamma_item])
+            # collecting rows
+            # routes_rows += [short_long_routes]
+            short_rows += [short_routes] # table 1
+            long_rows += [long_routes] # table 2
+            time_rows += [total_time] # table 3
+            q_table_rows += [q_tables] # table 4
 
-        # collecting rows
-        q_table_rows += [q_tables]
+        # empty row to separate gamma trials 
+        short_rows += [''] # table 1
+        long_rows += [''] # table 2
+        time_rows += [''] # table 3
+        q_table_rows += [''] # table 4
 
-    print(head_routes_fields)
-    print(routes_rows)
+    #print(head_routes_fields)
+    #print(routes_rows)
     #end of execution
-    env.mainloop()
     
-    date = datetime.now().strftime("%Y_%m_%d-%I_%M_%p")
+    epsilon_array.insert(0, 'X-X-X-X')
+    date = datetime.now().strftime("%Y_%m_%d-%I_%M%p")
 
-    with open("Q_analysis_"+date+".csv", 'w', encoding='UTF8', newline='') as f:
+    with open("Q-Analysis_"+ envi_options[user_input-1] +"_"+date+".csv", 'w', encoding='UTF8', newline='') as f:
         writer = csv.writer(f)
 
-        writer.writerow(head_routes_fields)
-        writer.writerows(routes_rows)
-
+        writer.writerow(['', '' ,'Q Learning Algorithm', '', envi_options[user_input-1]])
         writer.writerow('')
-        
+
+        # print shortest path table
+        writer.writerow(['','Shortest Path'])
+        writer.writerow(epsilon_array)
+        writer.writerows(short_rows)
+        writer.writerow('')
+
+        # print longest path table 
+        writer.writerow(['','Longest Path'])
+        writer.writerow(epsilon_array)
+        writer.writerows(long_rows)
+        writer.writerow('')
+
+        # print 'time' table
+        writer.writerow(['','Total time'])
+        writer.writerow(epsilon_array)
+        writer.writerows(time_rows)
+        writer.writerow('')
+
+        # print Q table
+        writer.writerow(['','Q Table'])
         writer.writerow(head_qTable_fields)
         writer.writerows(q_table_rows)
-        
+
+    env.mainloop()
