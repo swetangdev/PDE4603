@@ -139,7 +139,6 @@ if __name__ == "__main__":
 
 
     for gamma_item in range(len(gamma_array)):
-        #set header for writing in CSV file - header will epsilon value
         
         # declalring shortest route array for storing all routes 
         # found using Combination of "one Gamma with multiple Epsilon"
