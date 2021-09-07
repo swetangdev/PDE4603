@@ -3,6 +3,7 @@ from datetime import datetime
 from maze import Environment
 from SARSA_learning_algorithm import SarsaTable
 import csv
+from generate_csv import generate_csv
 
 shortest_route = 0
 longest_route = 0
@@ -74,50 +75,26 @@ def exec_update(iterations = 1000):
     print("total time:", time_taken)
 
     return shortest_route, longest_route, q_table_final, q_table, time_taken
-
-
-def get_user_input():
-    print('Please enter your choice for environment')
-    print('0. Exit')
-    print('1. No Obstacle')
-    print('2. One Obstacle')
     
-    choose_envi = int(input('Please enter your choice:'))
-    return choose_envi
 
 # Commands to be implemented after running this file
 if __name__ == "__main__":
-
+    
     # Getting and checking user input
-    while True:
-        try:
-            user_input = get_user_input()
-        except ValueError:
-            print("Sorry, I didn't understand that.")
-            continue
-        
-        if user_input > 2 or user_input < 0:
-            print("Sorry, please choose 0, 1 or 2.")
-            continue
-        elif user_input == 0:
-            exit()
-        else:
-            break
+    from user_choice import *
 
+    environment_name = envi_options[user_input-1]
+    algorithm_name = 'SARSA'
     # Calling for the environment
-    env = Environment({ 'algo': 'SARSA-Learning', 'envi': envi_options[user_input-1]})
+    env = Environment({ 'algo': algorithm_name+'-Learning', 'envi': environment_name})
 
-    # Calling for the main algorithm
-    #RL = SarsaTable(actions=list(range(env.n_actions)),
-                    #learning_rate=0.1,
-                    #reward_decay=0.2,
-                    #e_greedy=0.2)
-    # Running the main loop with Episodes by calling the function exec_update()
-    #env.after(100, exec_update)  # Or just exec_update()
-    #env.mainloop()
+    # execution setting variables
+    max_trials = 2 # 11
+    num_of_episodes = 10 #1000
+    gamma_array = [0.9]#, 0.8, 0.7, 0.6, 0.5]
+    epsilon_array = [0.9]#, 0.8, 0.7, 0.6, 0.5]
 
     # declaring head_routes_fields as heading in csv
-    #head_routes_fields = ['Route']
     head_epsilon = ['']
 
     # declaring Q-table fields as heading
@@ -130,31 +107,21 @@ if __name__ == "__main__":
     time_rows = [] # table 3
     q_table_rows = [] # table 4
     
-    routes_row_head = ['']
     q_table_row_head = ['']
 
-    gamma_array = [0.9, 0.8] #, 0.7, 0.6, 0.5]
-    epsilon_array = [0.9, 0.8] #, 0.7, 0.6, 0.5]
-    
     for epsilon_item in range(len(epsilon_array)):
-        # first row as epsilon values
-        routes_row_head += 'Short', 'Long', 'Time'
-
         # first row as epsilon values
         head_qTable_fields += epsilon_array[epsilon_item], '' # head_qTable_fields = Q-table | Final ,0.6,'',0.5,''
         q_table_row_head += 'Final', 'Full'
 
-    #routes_rows += [routes_row_head]
     q_table_rows += [q_table_row_head]
 
-
+    # Execution start ---
     for gamma_item in range(len(gamma_array)):
-        
-        # declalring shortest route array for storing all routes 
-        # found using Combination of "one Gamma with multiple Epsilon"
         # short_long_routes = []
+
         # for one Gamma run 10 trials
-        for trial in range(1,2):
+        for trial in range(1, max_trials):
             short_routes = [] # table 1
             long_routes = [] # table 2
             total_time = [] # table 3
@@ -166,14 +133,15 @@ if __name__ == "__main__":
                 RL = SarsaTable( actions=list(range(env.total_actions)), gamma = gamma_array[gamma_item], epsilon = epsilon_array[epsilon_item], learning_rate=0.1 )
                 
                 # Running the main loop with Episodes by calling the function exec_update()
-                #env.after(100, exec_update(10))  # Or just exec_update()
-                shortest_route, longest_route, q_table_final, q_table, time_taken = exec_update(10)
+                shortest_route, longest_route, q_table_final, q_table, time_taken = exec_update(num_of_episodes)
                 
                 # storing all shortest route for each iteration to show in "row" format
                 short_routes += [shortest_route] # table 1
                 long_routes += [longest_route] # table 2
                 total_time += [time_taken] # table 3
                 q_tables += [q_table_final, q_table] # table 4
+            
+            # END epsilon loop -----
 
             # add "first" element as "Gamma" value for each row
             #short_long_routes.insert(0, gamma_array[gamma_item])
@@ -188,24 +156,23 @@ if __name__ == "__main__":
             long_rows += [long_routes] # table 2
             time_rows += [total_time] # table 3
             q_table_rows += [q_tables] # table 4
-
         
-        # empty row to separate gamma trials 
+        # END trial loop -----
+        # empty row to separate gamma bulk-trial 
         short_rows += [''] # table 1
         long_rows += [''] # table 2
         time_rows += [''] # table 3
         q_table_rows += [''] # table 4
 
+    # end of execution -----
 
-    #print(head_routes_fields)
-    #print(routes_rows)
-    #end of execution
-
-    epsilon_array.insert(0, 'X-X-X-X')
-    date = datetime.now().strftime("%Y_%m_%d-%I_%M%p")
-
-    with open("SARSA_analysis_"+ envi_options[user_input-1] +"_"+date+".csv", 'w', encoding='UTF8', newline='') as f:
+    create_csv = generate_csv(algorithm_name, environment_name, epsilon_array, short_rows, long_rows, time_rows, head_qTable_fields, q_table_rows)
+    
+    '''with open("SARSA_analysis_"+ envi_options[user_input-1] +"_"+date+".csv", 'w', encoding='UTF8', newline='') as f:
         writer = csv.writer(f)
+
+        writer.writerow(['', '' ,'SARSA Learning Algorithm', '', envi_options[user_input-1]])
+        writer.writerow('')
 
         # print shortest path table
         writer.writerow(['','Shortest Path'])
@@ -228,6 +195,6 @@ if __name__ == "__main__":
         # print Q table
         writer.writerow(['','Q Table'])
         writer.writerow(head_qTable_fields)
-        writer.writerows(q_table_rows)
+        writer.writerows(q_table_rows)'''
 
     env.mainloop()
