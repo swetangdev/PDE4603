@@ -1,4 +1,5 @@
 # Importing classes
+import numpy as np
 from datetime import datetime
 from maze import Environment
 from Q_learning_algorithm import QTable
@@ -67,6 +68,15 @@ def exec_update(iterations = 1000):
 
     return shortest_route, longest_route, q_table_final, q_table, time_taken
 
+# get trial average of array
+def get_trial_average(trial_short_routes_rows):
+    # filter array to remove empty element
+    temp_a = np.array(list(filter(None,trial_short_routes_rows)))
+    # convert row to column
+    converted = temp_a.transpose()
+    # average of each column
+    average_a = (np.mean(converted, axis=1)).tolist()
+    return average_a
 
 # Commands to be implemented after running this file
 if __name__ == "__main__":
@@ -87,8 +97,8 @@ if __name__ == "__main__":
     env.mainloop() '''
 
     # execution setting variables
-    max_trials = 2 # 11
-    num_of_episodes = 10 # 1000
+    max_trials = 4 # 11
+    num_of_episodes = 2 # 1000
     gamma_array = [0.9, 0.8] #, 0.7, 0.6, 0.5]
     epsilon_array = [0.9, 0.8] #, 0.7, 0.6, 0.5]
     
@@ -101,6 +111,11 @@ if __name__ == "__main__":
     long_rows = [] # table 2
     time_rows = [] # table 3
     q_table_rows = [] # table 4
+    
+    average_short_rows = [] # average-csv Table 1
+    average_long_rows = [] # average-csv Table 2
+    average_time_rows = [] # average-csv Table 2
+
     
     q_table_row_head = ['']
     
@@ -116,13 +131,16 @@ if __name__ == "__main__":
     # Execution start ---
     for gamma_item in range(len(gamma_array)):
         # short_long_routes = []
-        
+        trial_short_routes_rows = []
+        trial_long_routes_rows = []
+        trial_time_rows = []
         # for one Gamma run 10 trials
         for trial in range(1, max_trials):
             short_routes = [] # table 1
             long_routes = [] # table 2
             total_time = [] # table 3
             q_tables = [] # table 4
+
             for epsilon_item in range(len(epsilon_array)):
                 print(gamma_array[gamma_item], epsilon_array[epsilon_item])
                 
@@ -141,6 +159,13 @@ if __name__ == "__main__":
 
             # END epsilon loop -----
             
+            # Average of trials: Collecting rows ---START---
+            trial_short_routes_rows += [short_routes]
+            trial_long_routes_rows += [long_routes]
+            trial_time_rows += [total_time]
+            # Average of trials ---END---
+
+            
             # add "first" element as "Gamma" value for each row
             #short_long_routes.insert(0, gamma_array[gamma_item])
             short_routes.insert(0, gamma_array[gamma_item]) # table 1... 0.9 __ __ __ __
@@ -156,15 +181,42 @@ if __name__ == "__main__":
             q_table_rows += [q_tables] # table 4
 
         # END trial loop -----
+
+        # collecting rows for AVERAGE file TABLE ---START---
+        average_short_routes = get_trial_average(trial_short_routes_rows)
+        average_short_rows += [average_short_routes]
+        
+        average_long_routes = get_trial_average(trial_long_routes_rows)
+        average_long_rows += [average_long_routes]
+        
+        average_time = get_trial_average(trial_time_rows)
+        average_time_rows += [average_time]
+        # collecting rows for AVERAGE file TABLE ---END---
+
         # empty row to separate gamma trials 
         short_rows += [''] # table 1
         long_rows += [''] # table 2
         time_rows += [''] # table 3
         q_table_rows += [''] # table 4
 
+        
+        '''print('----------------')
+        print(trial_short_routes_rows)
+        print('----------------')
+        aaa = np.array(list(filter(None,trial_short_routes_rows)))
+        converted = aaa.transpose()
+        average_a = np.mean(converted, axis=1)
+        print('+++++++++++')
+        print(converted)
+        print(average_a)
+        print('+++++++++++')'''
     # end of execution -----
         
-    create_csv = generate_csv(algorithm_name, environment_name, epsilon_array, short_rows, long_rows, time_rows, head_qTable_fields, q_table_rows)
+    create_csv = generate_csv()
+    create_csv.generate(algorithm_name, environment_name, epsilon_array, short_rows, long_rows, time_rows, head_qTable_fields, q_table_rows)
+
+    create_csv.generate_avg(algorithm_name, environment_name, epsilon_array, average_short_rows, average_long_rows, average_time_rows)
+
 
     '''with open("Q-Analysis_"+ envi_options[user_input-1] +"_"+date+".csv", 'w', encoding='UTF8', newline='') as f:
         writer = csv.writer(f)

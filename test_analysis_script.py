@@ -12,23 +12,31 @@ csv_writer = csv.writer(test_file)
 #write row in csv file
 csv_writer.writerow(row) '''
 
-
+import numpy as np
 import csv
 from datetime import datetime
+
+from numpy.lib.function_base import average
     
 
 # csv header
 fieldnames = ['name', 'area', 'country_code2', 'country_code3']
 
 # csv data
-rows = [
+rows = np.array([
     ['Albania', 28748, 'AL', 'ALB'],
     ['Algeria', 2381741, 'DZ', 'DZA'],
     ['American Samoa', 199, 'AS', 'ASM']
-]
+])
 
-fieldnames.insert(0, '00000')
-print(fieldnames)
+newaa =  [[0.9, 197, 101], [0.9, 101, 101], [0.9, 101, 101], '', [0.8, 101, 101], [0.8, 101, 96], [0.8, 96, 96], '']
+newbb = np.array(list(filter(None,(newaa))))
+
+print(newaa)
+converted = newbb.transpose()
+average_a = (np.mean(converted, axis=1)).tolist()
+average_a[0] = 'Avg'
+print(average_a)
 exit()
 
 date = str(datetime.now().strftime("%d_%m_%Y-%I_%M_%p"))
