@@ -3,17 +3,20 @@ import numpy as np
 from datetime import datetime
 from maze import Environment
 from Q_learning_algorithm import QTable
-import csv
+import time
 from generate_csv import generate_csv
+from user_choice import user_choice_class
 
 shortest_route = 0
 longest_route = 0
-envi_options = ['no-obstacle', 'Obstacle']
+
 
 def exec_update(iterations = 1000):
     # Resulted list for the plotting Episodes via Steps
     steps = []
     start_time = datetime.now()
+    shortest_route = 0
+    longest_route = 0
     # Summed costs for all episodes in resulted list
     all_costs = []
     for episode in range(iterations): # also works with 100 iterations
@@ -32,7 +35,7 @@ def exec_update(iterations = 1000):
 
             # RL chooses action based on observation
             action = RL.choose_action(str(observation))
-
+            
             # RL takes an action and get the next observation and reward
             observation_, reward, done = env.step(action)
 
@@ -82,14 +85,13 @@ def get_trial_average(trial_short_routes_rows):
 if __name__ == "__main__":
 
     # Getting and checking user input
-    from user_choice import *
-   
-    environment_name = envi_options[user_input-1]
+    u_choice = user_choice_class()
+    environment_name = u_choice.get_selected_envi()
     
     algorithm_name = 'Q'
     # Calling for the environment
     env = Environment({ 'algo': algorithm_name+'-Learning', 'envi': environment_name})
-
+    
     ''' # Calling for the main algorithm
     RL = QTable(actions=list(range(env.total_actions)))
     # Running the main loop with Episodes by calling the function exec_update()
@@ -97,10 +99,13 @@ if __name__ == "__main__":
     env.mainloop() '''
 
     # execution setting variables
-    max_trials = 4 # 11
-    num_of_episodes = 2 # 1000
-    gamma_array = [0.9, 0.8] #, 0.7, 0.6, 0.5]
-    epsilon_array = [0.9, 0.8] #, 0.7, 0.6, 0.5]
+    max_trials = 2 # 11
+    num_of_episodes = 2000 # 1000
+    gamma_array = [0.9]#, 0.7, 0.65] #[0.9, 0.8, 0.7] #, 0.6]
+    epsilon_array = [0.9]#, 0.7, 0.65] #[0.9, 0.8, 0.7] #, 0.6]
+    
+    # declaring head_routes_fields as heading in csv
+    head_epsilon = ['']
     
     # declaring Q-table fields as heading
     head_qTable_fields = ['XXXXXX']
@@ -116,7 +121,6 @@ if __name__ == "__main__":
     average_long_rows = [] # average-csv Table 2
     average_time_rows = [] # average-csv Table 2
 
-    
     q_table_row_head = ['']
     
     # loop to create heading for each table
@@ -140,22 +144,22 @@ if __name__ == "__main__":
             long_routes = [] # table 2
             total_time = [] # table 3
             q_tables = [] # table 4
-
             for epsilon_item in range(len(epsilon_array)):
                 print(gamma_array[gamma_item], epsilon_array[epsilon_item])
                 
                 # making Q-table ready for exploration
                 RL = QTable( actions=list(range(env.total_actions)), gamma = gamma_array[gamma_item], epsilon = epsilon_array[epsilon_item] )
                 
+                time.sleep(1.5)
                 # Running the main loop with Episodes by calling the function exec_update()
                 #env.after(100, exec_update(10))  # Or just exec_update()
-                shortest_route, longest_route, q_table_final, q_table, time_taken = exec_update(num_of_episodes)
+                short_route, long_route, final_q_table, full_q_table, total_time_taken = exec_update(num_of_episodes)
                 
                 # storing all shortest route for each iteration to show in "row" format
-                short_routes += [shortest_route] # table 1
-                long_routes += [longest_route] # table 2
-                total_time += [time_taken] # table 3
-                q_tables += [q_table_final, q_table] # table 4
+                short_routes += [short_route] # table 1
+                long_routes += [long_route] # table 2
+                total_time += [total_time_taken] # table 3
+                q_tables += [final_q_table, full_q_table] # table 4
 
             # END epsilon loop -----
             
@@ -199,52 +203,11 @@ if __name__ == "__main__":
         time_rows += [''] # table 3
         q_table_rows += [''] # table 4
 
-        
-        '''print('----------------')
-        print(trial_short_routes_rows)
-        print('----------------')
-        aaa = np.array(list(filter(None,trial_short_routes_rows)))
-        converted = aaa.transpose()
-        average_a = np.mean(converted, axis=1)
-        print('+++++++++++')
-        print(converted)
-        print(average_a)
-        print('+++++++++++')'''
     # end of execution -----
-        
+    epsilon_array.insert(0, 'X-X-X-X')
     create_csv = generate_csv()
-    create_csv.generate(algorithm_name, environment_name, epsilon_array, short_rows, long_rows, time_rows, head_qTable_fields, q_table_rows)
+    create_csv.generate(algorithm_name, environment_name, epsilon_array, short_rows, long_rows, time_rows, head_qTable_fields, q_table_rows, num_of_episodes)
 
-    create_csv.generate_avg(algorithm_name, environment_name, epsilon_array, average_short_rows, average_long_rows, average_time_rows)
-
-
-    '''with open("Q-Analysis_"+ envi_options[user_input-1] +"_"+date+".csv", 'w', encoding='UTF8', newline='') as f:
-        writer = csv.writer(f)
-
-        writer.writerow(['', '' ,'Q Learning Algorithm', '', envi_options[user_input-1]])
-        writer.writerow('')
-
-        # print shortest path table
-        writer.writerow(['','Shortest Path'])
-        writer.writerow(epsilon_array)
-        writer.writerows(short_rows)
-        writer.writerow('')
-
-        # print longest path table 
-        writer.writerow(['','Longest Path'])
-        writer.writerow(epsilon_array)
-        writer.writerows(long_rows)
-        writer.writerow('')
-
-        # print 'time' table
-        writer.writerow(['','Total time'])
-        writer.writerow(epsilon_array)
-        writer.writerows(time_rows)
-        writer.writerow('')
-
-        # print Q table
-        writer.writerow(['','Q Table'])
-        writer.writerow(head_qTable_fields)
-        writer.writerows(q_table_rows)'''
+    create_csv.generate_avg(algorithm_name, environment_name, epsilon_array, average_short_rows, average_long_rows, average_time_rows, num_of_episodes)
 
     env.mainloop()

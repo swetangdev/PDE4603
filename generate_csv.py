@@ -3,15 +3,15 @@ from datetime import datetime
 
 class generate_csv:
     #def __init__(self, algorithm_name, environment_name, epsilon_array, short_rows, long_rows, time_rows, head_qTable_fields, q_table_rows):
-    def generate(self, algorithm_name, environment_name, epsilon_array, short_rows, long_rows, time_rows, head_qTable_fields, q_table_rows):
+    def generate(self, algorithm_name, environment_name, epsilon_array, short_rows, long_rows, time_rows, head_qTable_fields, q_table_rows, num_of_episodes):
         date = datetime.now().strftime("%Y_%m_%d-%I_%M%p")
         filename = algorithm_name+"_analysis_"+ environment_name +"_"+date+".csv"
-        epsilon_array.insert(0, 'X-X-X-X')
+        #epsilon_array.insert(0, 'X-X-X-X')
 
-        with open(filename, 'w', encoding='UTF8', newline='') as f:
+        with open('analysis/'+filename, 'w', encoding='UTF8', newline='') as f:
             writer = csv.writer(f)
 
-            writer.writerow(['', '' , algorithm_name+' Learning Algorithm', '', environment_name])
+            writer.writerow(['', algorithm_name+' Learning Algorithm', 'Episodes:'+str(num_of_episodes) , environment_name])
             writer.writerow('')
 
             # print shortest path table
@@ -37,15 +37,15 @@ class generate_csv:
             writer.writerow(head_qTable_fields)
             writer.writerows(q_table_rows)
 
-    def generate_avg(self, algorithm_name, environment_name, epsilon_array_avg, average_short_rows, average_long_rows, average_time_rows):
+    def generate_avg(self, algorithm_name, environment_name, epsilon_array_avg, average_short_rows, average_long_rows, average_time_rows, num_of_episodes):
         date = datetime.now().strftime("%Y_%m_%d-%I_%M%p")
         filename = algorithm_name+"_analysis-AVG_"+ environment_name +"_"+date+".csv"
-        epsilon_array_avg.insert(0, 'X-X-X-X')
+        #epsilon_array_avg.insert(0, 'X-X-X-X')
 
-        with open(filename, 'w', encoding='UTF8', newline='') as f:
+        with open('analysis/'+filename, 'w', encoding='UTF8', newline='') as f:
             writer = csv.writer(f)
 
-            writer.writerow(['', '' , algorithm_name+' Learning Algorithm', '', environment_name])
+            writer.writerow(['', algorithm_name+' Learning Algorithm', 'Episodes:'+str(num_of_episodes), environment_name])
             writer.writerow('')
 
             # print shortest path table

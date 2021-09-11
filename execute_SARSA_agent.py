@@ -2,8 +2,10 @@
 from datetime import datetime
 from maze import Environment
 from SARSA_learning_algorithm import SarsaTable
-import csv
+import time
 from generate_csv import generate_csv
+import numpy as np
+from user_choice import user_choice_class
 
 shortest_route = 0
 longest_route = 0
@@ -13,6 +15,8 @@ def exec_update(iterations = 1000):
     # Resulted list for the plotting Episodes via Steps
     steps = []
     start_time = datetime.now()
+    shortest_route = 0
+    longest_route = 0
     # Summed costs for all episodes in resulted list
     all_costs = []
 
@@ -90,18 +94,18 @@ def get_trial_average(trial_short_routes_rows):
 if __name__ == "__main__":
     
     # Getting and checking user input
-    from user_choice import *
+    u_choice = user_choice_class()
+    environment_name = u_choice.get_selected_envi()
 
-    environment_name = envi_options[user_input-1]
     algorithm_name = 'SARSA'
     # Calling for the environment
     env = Environment({ 'algo': algorithm_name+'-Learning', 'envi': environment_name})
 
     # execution setting variables
-    max_trials = 2 # 11
-    num_of_episodes = 10 #1000
-    gamma_array = [0.9]#, 0.8, 0.7, 0.6, 0.5]
-    epsilon_array = [0.9]#, 0.8, 0.7, 0.6, 0.5]
+    max_trials =  6 # 11
+    num_of_episodes = 500 #1000
+    gamma_array = [0.8, 0.7, 0.6]
+    epsilon_array = [0.8, 0.7, 0.6]
 
     # declaring head_routes_fields as heading in csv
     head_epsilon = ['']
@@ -144,17 +148,19 @@ if __name__ == "__main__":
             for epsilon_item in range(len(epsilon_array)):
                 print(gamma_array[gamma_item], epsilon_array[epsilon_item])
                 
+                # learning_rate=0.1, reward_decay=0.2, e_greedy=0.2
                 # making Q-table ready for exploration
                 RL = SarsaTable( actions=list(range(env.total_actions)), gamma = gamma_array[gamma_item], epsilon = epsilon_array[epsilon_item], learning_rate=0.1 )
-                
+
+                time.sleep(1.5)                
                 # Running the main loop with Episodes by calling the function exec_update()
-                shortest_route, longest_route, q_table_final, q_table, time_taken = exec_update(num_of_episodes)
+                short_route, long_route, final_q_table, full_q_table, total_time_taken = exec_update(num_of_episodes)
                 
                 # storing all shortest route for each iteration to show in "row" format
-                short_routes += [shortest_route] # table 1
-                long_routes += [longest_route] # table 2
-                total_time += [time_taken] # table 3
-                q_tables += [q_table_final, q_table] # table 4
+                short_routes += [short_route] # table 1
+                long_routes += [long_route] # table 2
+                total_time += [total_time_taken] # table 3
+                q_tables += [final_q_table, full_q_table] # table 4
             
             # END epsilon loop -----
             
@@ -197,37 +203,9 @@ if __name__ == "__main__":
         q_table_rows += [''] # table 4
 
     # end of execution -----
-
+    epsilon_array.insert(0, 'X-X-X-X')
     create_csv = generate_csv()
-    create_csv.generate(algorithm_name, environment_name, epsilon_array, short_rows, long_rows, time_rows, head_qTable_fields, q_table_rows)
-    create_csv.generate_avg(algorithm_name, environment_name, epsilon_array, average_short_rows, average_long_rows, average_time_rows)
-    '''with open("SARSA_analysis_"+ envi_options[user_input-1] +"_"+date+".csv", 'w', encoding='UTF8', newline='') as f:
-        writer = csv.writer(f)
-
-        writer.writerow(['', '' ,'SARSA Learning Algorithm', '', envi_options[user_input-1]])
-        writer.writerow('')
-
-        # print shortest path table
-        writer.writerow(['','Shortest Path'])
-        writer.writerow(epsilon_array)
-        writer.writerows(short_rows)
-        writer.writerow('')
-
-        # print longest path table 
-        writer.writerow(['','Longest Path'])
-        writer.writerow(epsilon_array)
-        writer.writerows(long_rows)
-        writer.writerow('')
-
-        # print 'time' table
-        writer.writerow(['','Total time'])
-        writer.writerow(epsilon_array)
-        writer.writerows(time_rows)
-        writer.writerow('')
-
-        # print Q table
-        writer.writerow(['','Q Table'])
-        writer.writerow(head_qTable_fields)
-        writer.writerows(q_table_rows)'''
-
+    create_csv.generate(algorithm_name, environment_name, epsilon_array, short_rows, long_rows, time_rows, head_qTable_fields, q_table_rows, num_of_episodes)
+    create_csv.generate_avg(algorithm_name, environment_name, epsilon_array, average_short_rows, average_long_rows, average_time_rows, num_of_episodes)
+    
     env.mainloop()

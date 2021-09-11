@@ -5,6 +5,7 @@ import tkinter as tk # for making GUI
 import time # for time calculation
 from PIL import Image, ImageTk
 from numpy.core.records import array
+from user_choice import envi_options
 
 # define the size of an environment, 12 x 12 maze with each of 20 pixels
 pixels = 40
@@ -21,13 +22,14 @@ environment_name = ''
 # class for environment 
 
 class Environment(tk.Tk, object):
-    def __init__(self, field):
+    def __init__(self, field = ({'algo': 'R-Learning', 'envi':''})):
         super(Environment, self).__init__()
         self.actions = ['up','down','left','right']
-
+        self.obstacle_walls = []
+        
         # using ternary condition check if Algo, Envi options are exist or set it default value
         field['algo'] = 'R-Learning' if 'algo' not in field else field['algo']
-        field['envi'] = 'no-obstcle' if 'envi' not in field else field['envi']
+        field['envi'] = envi_options[0] if 'envi' not in field else field['envi']
         
         print('Chosen Evnironment: ', field['envi'])
         
@@ -36,6 +38,18 @@ class Environment(tk.Tk, object):
         # set chosen environment
         self.chosen_envi = field['envi']
 
+        if field['envi'] == 'Cliff Walk':
+            pixels = 40
+            env_height = 12
+            env_width = 6
+            total_env_height = env_height * pixels
+            total_env_width = env_width * pixels
+        else:
+            pixels = 40
+            env_height = 12
+            env_width = 12
+            total_env_height = env_height * pixels
+            total_env_width = env_width * pixels
         self.total_actions = len(self.actions)
         self.geometry('{0}x{1}'.format(total_env_height, total_env_width))
         self.create_environment()
@@ -68,34 +82,97 @@ class Environment(tk.Tk, object):
             x0, y0, x1, y1 = 0, row, env_height * pixels, row
             self.canvas_widget.create_line(x0, y0, x1, y1, fill='grey')
 
+        
+
+        # An array to help with building rectangles
+        self.o = np.array([pixels / 2, pixels / 2])
+
         # check if user has chosen obstacle environment, then add obstacle to environment
-        if self.chosen_envi == 'Obstacle':
-            img_obstacle1 = Image.open("images/square.png")
-            self.obstacle1_object = ImageTk.PhotoImage(img_obstacle1)
-            self.obstacle1 = self.canvas_widget.create_image(pixels * 5, pixels * 5, anchor='nw', image=self.obstacle1_object)
+        if self.chosen_envi == 'Obstacle Cross':
+            #img_obstacle1 = Image.open("images/square.png")
+            #self.obstacle1_object = ImageTk.PhotoImage(img_obstacle1)
+            #self.obstacle1 = self.canvas_widget.create_image(pixels * 5, pixels * 5, anchor='nw', image=self.obstacle1_object)
+
+            # obstacle envi 2
+            # Obstacle Wall co ordinates for the maze
+            obstacle_coords = [[5,1], [8,2], [9,3], [9,1], [10,2],
+                [1,2], [2,4], [1,5], [2,3], [5,5], [6,4],
+                [9,6], [6,7], [7,8], [2,8], [3,7],
+                [4,11], [5,10], [6,11], [11,7], [11,4]]
+            # render obstacle block using dynamic function
+            self.obstacle_function(obstacle_coords, '#36b38b')
+        elif self.chosen_envi == 'Obstacle Walls':
+            
+            # obstacle envi 2
+            # Obstacle Wall co ordinates for the maze
+            obstacle_coords = [[2,2], [3,2], [3,3], [4,2],
+                [8,0], [8,1], [7,1], 
+                [6,4], [7,4], [8,4],
+                [2,6], [3,6],
+                [4,10], [4,11], 
+                [1,9],
+                [7, 7], [7,8], [8,7], [7,9], [10,7]]
+            # render obstacle block using dynamic function
+            self.obstacle_function(obstacle_coords, '#36b38b')
+
+        elif self.chosen_envi == 'Cliff Walk':
+            
+            # obstacle envi 2
+            # Obstacle Wall co ordinates for the maze
+            obstacle_coords = [[1,0], [2,0], [3,0], [4,0], [5,0], [6,0], [7,0], [8,0], [9,0], [10,0]]
+            # render obstacle block using dynamic function
+            self.obstacle_function(obstacle_coords, '#000000')
+
+
+        # Creating an agent of Mobile Robot - red point
+        self.agent = self.canvas_widget.create_oval(
+            self.o[0] - 14, self.o[1] - 14,
+            self.o[0] + 14, self.o[1] + 14,
+            outline='#FF1493', fill='#FF1493')
 
         # Final Point
-        img_flag = Image.open("images/flag.png")
+        '''img_flag = Image.open("images/flag.png")
         self.flag_object = ImageTk.PhotoImage(img_flag)
-        self.flag = self.canvas_widget.create_image(pixels * 11, pixels * 5, anchor='nw', image=self.flag_object)
+        self.flag = self.canvas_widget.create_image(pixels * 11, pixels * 5, anchor='nw', image=self.flag_object)'''
+
+        # Final Point - yellow point
+        if self.chosen_envi == 'Cliff Walk':
+            flag_center = self.o + np.array([pixels * 11, 0])
+        else:
+            flag_center = self.o + np.array([pixels * 9, pixels * 9])
+        # Building the flag
+        self.flag = self.canvas_widget.create_rectangle(
+            flag_center[0] - 20, flag_center[1] - 20,  # Top left corner
+            flag_center[0] + 20, flag_center[1] + 20,  # Bottom right corner
+            outline='grey', fill='yellow')
+        # Saving the coordinates of the final point according to the size of agent
+        # In order to fit the coordinates of the agent
+        self.coords_flag = [self.canvas_widget.coords(self.flag)[0] + 6,
+                            self.canvas_widget.coords(self.flag)[1] + 6,
+                            self.canvas_widget.coords(self.flag)[2] - 6,
+                            self.canvas_widget.coords(self.flag)[3] - 6]
 
         # Uploading the image of Mobile Robot
-        img_robot = Image.open("images/agent1.png")
-        self.robot = ImageTk.PhotoImage(img_robot)
+        #img_robot = Image.open("images/agent1.png")
+        #self.robot = ImageTk.PhotoImage(img_robot)
         # Creating an agent with photo of Mobile Robot
-        self.agent = self.canvas_widget.create_image(0, pixels*5, anchor='nw', image=self.robot)
+        #self.agent = self.canvas_widget.create_image(0, pixels*5, anchor='nw', image=self.robot)
+        
 
         # Packing everything
         self.canvas_widget.pack()
-
+    
 
     def reset(self):
         self.update()
 
         # reset the agent at initial position
         self.canvas_widget.delete(self.agent)
-        self.agent = self.canvas_widget.create_image(0, pixels*5, anchor='nw', image=self.robot)
-
+        #self.agent = self.canvas_widget.create_image(0, pixels*5, anchor='nw', image=self.robot)
+        self.agent = self.canvas_widget.create_oval(
+            self.o[0] - 14, self.o[1] - 14,
+            self.o[0] + 14, self.o[1] + 14,
+            outline='red', fill='red')
         # reset the dictionary and the i
         self.d = {}
         self.i = 0
@@ -138,12 +215,14 @@ class Environment(tk.Tk, object):
 
         # Updating next state
         next_state = self.d[self.i]
-
+        
         # Updating key for the dictionary
         self.i += 1
 
         # Calculating the reward for the agent
-        if next_state == self.canvas_widget.coords(self.flag):
+        #if next_state == self.canvas_widget.coords(self.flag):
+        if next_state == self.coords_flag:
+        
             reward = 1
             done = True
             next_state = 'goal'
@@ -176,15 +255,29 @@ class Environment(tk.Tk, object):
             reward = -1
             done = True
             next_state = 'obstacle'
-        
+            print(self.canvas_widget.coords(self.obstacle1))
             # Clearing the dictionary and the i
             self.d = {}
             self.i = 0
 
+        elif self.chosen_envi in envi_options and next_state in self.obstacle_walls:
+            reward = -1
+            done = True
+            next_state = 'obstacle'
+            # Clearing the dictionary and the i
+            self.d = {}
+            self.i = 0
+            '''elif self.chosen_envi == 'Cliff Walk' and next_state in self.obstacle_walls:
+                reward = -1
+                done = True
+                next_state = 'obstacle'
+                # Clearing the dictionary and the i
+                self.d = {}
+                self.i = 0'''
+
         else:
             reward = 0
             done = False
-
         return next_state, reward, done
 
 
@@ -203,19 +296,24 @@ class Environment(tk.Tk, object):
         #print('The longest route:', self.longest)
 
         # Creating initial point
-        origin = np.array([20, 220])
+        #origin = np.array([20, 220])
+        origin = np.array([20, 20])
         self.initial_point = self.canvas_widget.create_oval(
+            self.o[0] - 5, self.o[1] - 5,
+            self.o[0] + 5, self.o[1] + 5,
+            fill='blue', outline='blue')
+        '''self.initial_point = self.canvas_widget.create_oval(
             origin[0] - 5, origin[1] - 5,
             origin[0] + 5, origin[1] + 5,
-            fill='blue', outline='blue')
+            fill='blue', outline='blue')'''
 
         # Filling the route
         for j in range(len(self.f)):
             # Showing the coordinates of the final route
             ## print(self.f[j])
             self.track = self.canvas_widget.create_oval(
-                self.f[j][0] + origin[0] - 5, self.f[j][1] + origin[0] - 5,
-                self.f[j][0] + origin[0] + 5, self.f[j][1] + origin[0] + 5,
+                self.f[j][0] - 4 + origin[0] - 5, self.f[j][1] - 4 + origin[0] - 5,
+                self.f[j][0] - 4 + origin[0] + 5, self.f[j][1] - 4 + origin[0] + 5,
                 fill='blue', outline='blue')
             # Writing the final route in the global variable a
             a[j] = self.f[j] 
@@ -226,6 +324,26 @@ class Environment(tk.Tk, object):
         time.sleep(1)
         #self.canvas_widget.delete(self.track)
 
+
+    def obstacle_function(self, obstacle_coords, fill_color = '#00BFFF'):
+        
+        for i in range(len(obstacle_coords)):
+                
+            obstacle_var = self.o + np.array([pixels* obstacle_coords[i][0], pixels * obstacle_coords[i][1]])
+            
+            # Building the obstacle 1
+            obstacle = self.canvas_widget.create_rectangle(
+                obstacle_var[0] - 20, obstacle_var[1] - 20,  # Top left corner
+                obstacle_var[0] + 20, obstacle_var[1] + 20,  # Bottom right corner
+                outline='grey', fill= fill_color)
+            # Saving the coordinates of obstacle 1 according to the size of agent
+            # In order to fit the coordinates of the agent
+            obstacle_coord_item = [self.canvas_widget.coords(obstacle)[0] + 6,
+                self.canvas_widget.coords(obstacle)[1] + 6,
+                self.canvas_widget.coords(obstacle)[2] - 6,
+                self.canvas_widget.coords(obstacle)[3] - 6]
+            self.obstacle_walls += [obstacle_coord_item]
+        
 # Returning the final dictionary with route coordinates
 # Then it will be used in agent_brain.py
 def final_states():

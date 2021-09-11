@@ -18,7 +18,10 @@ from datetime import datetime
 
 from numpy.lib.function_base import average
     
-
+obstacle_coord = [23.0, 43.0, 37.0, 57.0]
+if [23.0, 43.0] in obstacle_coord:
+    print('aaa')   
+exit()
 # csv header
 fieldnames = ['name', 'area', 'country_code2', 'country_code3']
 
