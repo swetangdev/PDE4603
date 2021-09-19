@@ -1,4 +1,4 @@
-envi_options = ['Obstacle Cross', 'Obstacle Walls', 'Cliff Walk']
+envi_options = ['Obstacle','Obstacle Cross', 'Obstacle Walls', 'Cliff Walk']
 class user_choice_class:
     def __init__(self):
         self.user_input = 1

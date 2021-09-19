@@ -99,11 +99,13 @@ if __name__ == "__main__":
     env.mainloop() '''
 
     # execution setting variables
-    max_trials = 2 # 11
-    num_of_episodes = 2000 # 1000
-    gamma_array = [0.9]#, 0.7, 0.65] #[0.9, 0.8, 0.7] #, 0.6]
-    epsilon_array = [0.9]#, 0.7, 0.65] #[0.9, 0.8, 0.7] #, 0.6]
-    
+    max_trials = 5 # 11
+    num_of_episodes = 1000 # 1000
+    #gamma_array =  [0.9, 0.8, 0.7] #[0.95, 0.93] #
+    #epsilon_array = [0.9, 0.8, 0.7] # [0.95, 0.93]  
+    gamma_array = [0.95, 0.93]
+    epsilon_array = [0.95, 0.93]
+
     # declaring head_routes_fields as heading in csv
     head_epsilon = ['']
     
@@ -139,7 +141,7 @@ if __name__ == "__main__":
         trial_long_routes_rows = []
         trial_time_rows = []
         # for one Gamma run 10 trials
-        for trial in range(1, max_trials):
+        for trial in range(0, max_trials):
             short_routes = [] # table 1
             long_routes = [] # table 2
             total_time = [] # table 3

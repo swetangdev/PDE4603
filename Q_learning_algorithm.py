@@ -29,11 +29,13 @@ class QTable:
         # Selection of the action - 90 % according to the epsilon == 0.9
         # Choosing the best action
         if np.random.uniform() < self.epsilon:
+            # choose action via exploitation
             state_action = self.q_table.loc[observation, :]
             state_action = state_action.reindex(np.random.permutation(state_action.index))
             action = state_action.idxmax()
         else:
             # Choosing random action - left 10 % for choosing randomly
+            # choose action via exploration
             action = np.random.choice(self.actions)
         return action
 

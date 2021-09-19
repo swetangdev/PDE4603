@@ -8,7 +8,7 @@ class generate_csv:
         filename = algorithm_name+"_analysis_"+ environment_name +"_"+date+".csv"
         #epsilon_array.insert(0, 'X-X-X-X')
 
-        with open('analysis/'+filename, 'w', encoding='UTF8', newline='') as f:
+        with open('analysis2/'+filename, 'w', encoding='UTF8', newline='') as f:
             writer = csv.writer(f)
 
             writer.writerow(['', algorithm_name+' Learning Algorithm', 'Episodes:'+str(num_of_episodes) , environment_name])
@@ -42,7 +42,7 @@ class generate_csv:
         filename = algorithm_name+"_analysis-AVG_"+ environment_name +"_"+date+".csv"
         #epsilon_array_avg.insert(0, 'X-X-X-X')
 
-        with open('analysis/'+filename, 'w', encoding='UTF8', newline='') as f:
+        with open('analysis2/'+filename, 'w', encoding='UTF8', newline='') as f:
             writer = csv.writer(f)
 
             writer.writerow(['', algorithm_name+' Learning Algorithm', 'Episodes:'+str(num_of_episodes), environment_name])

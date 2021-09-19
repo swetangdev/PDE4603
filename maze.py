@@ -9,10 +9,10 @@ from user_choice import envi_options
 
 # define the size of an environment, 12 x 12 maze with each of 20 pixels
 pixels = 40
-env_height = 12
-env_width = 12
-total_env_height = env_height * pixels
-total_env_width = env_width * pixels
+# self.env_height = 12
+# self.env_width = 12
+# self.total_env_height = self.env_height * pixels
+# self.total_env_width = self.env_width * pixels
 
 
 # Global variable for dictionary with coordinates for the final route
@@ -31,27 +31,26 @@ class Environment(tk.Tk, object):
         field['algo'] = 'R-Learning' if 'algo' not in field else field['algo']
         field['envi'] = envi_options[0] if 'envi' not in field else field['envi']
         
-        print('Chosen Evnironment: ', field['envi'])
+        print('Chosen Environment: ', field['envi'])
         
         self.title(field['algo'] + ' - Environment')
         
         # set chosen environment
         self.chosen_envi = field['envi']
-
-        if field['envi'] == 'Cliff Walk':
-            pixels = 40
-            env_height = 12
-            env_width = 6
-            total_env_height = env_height * pixels
-            total_env_width = env_width * pixels
+        
+        if field['envi'] == 'Obstacle':
+            self.env_height = 9
+            self.env_width = 9
+        elif field['envi'] == 'Cliff Walk':
+            self.env_height = 6
         else:
-            pixels = 40
-            env_height = 12
-            env_width = 12
-            total_env_height = env_height * pixels
-            total_env_width = env_width * pixels
+            self.env_height = 12
+            self.env_width = 12
+
+        self.total_env_height = self.env_height * pixels
+        self.total_env_width = self.env_width * pixels
         self.total_actions = len(self.actions)
-        self.geometry('{0}x{1}'.format(total_env_height, total_env_width))
+        self.geometry('{0}x{1}'.format(self.total_env_width, self.total_env_height))
         self.create_environment()
 
         # dictionaries for final route
@@ -72,14 +71,14 @@ class Environment(tk.Tk, object):
 
     # creating an environment
     def create_environment(self):
-        self.canvas_widget = tk.Canvas(self,  bg='white', height = total_env_height, width= total_env_width)
+        self.canvas_widget = tk.Canvas(self,  bg='white', height = self.total_env_height, width= self.total_env_width)
 
         # Creating grid lines
-        for column in range(0, env_width * pixels, pixels):
-            x0, y0, x1, y1 = column, 0, column, env_height * pixels
+        for column in range(0, self.env_width * pixels, pixels):
+            x0, y0, x1, y1 = column, 0, column, self.env_width * pixels
             self.canvas_widget.create_line(x0, y0, x1, y1, fill='grey')
-        for row in range(0, env_height * pixels, pixels):
-            x0, y0, x1, y1 = 0, row, env_height * pixels, row
+        for row in range(0, self.env_height * pixels, pixels):
+            x0, y0, x1, y1 = 0, row, self.env_width * pixels, row
             self.canvas_widget.create_line(x0, y0, x1, y1, fill='grey')
 
         
@@ -88,23 +87,35 @@ class Environment(tk.Tk, object):
         self.o = np.array([pixels / 2, pixels / 2])
 
         # check if user has chosen obstacle environment, then add obstacle to environment
-        if self.chosen_envi == 'Obstacle Cross':
+        if self.chosen_envi == 'Obstacle':
+            obstacle_coords = [[4,4]]
+            self.obstacle_function(obstacle_coords, '#36b38b')
+        elif self.chosen_envi == 'Obstacle Cross':
             #img_obstacle1 = Image.open("images/square.png")
             #self.obstacle1_object = ImageTk.PhotoImage(img_obstacle1)
             #self.obstacle1 = self.canvas_widget.create_image(pixels * 5, pixels * 5, anchor='nw', image=self.obstacle1_object)
 
             # obstacle envi 2
             # Obstacle Wall co ordinates for the maze
+            '''obstacle_coords = [ [8,2], [9,3],
+                [4,1], [3,2], [5,5], [6,4],
+                [9,6], [6,7], [7,8], [1,7], [2,6],
+                [5,10], [6,11], [10,7]]'''
             obstacle_coords = [[5,1], [8,2], [9,3], [9,1], [10,2],
                 [1,2], [2,4], [1,5], [2,3], [5,5], [6,4],
                 [9,6], [6,7], [7,8], [2,8], [3,7],
                 [4,11], [5,10], [6,11], [11,7], [11,4]]
             # render obstacle block using dynamic function
             self.obstacle_function(obstacle_coords, '#36b38b')
-        elif self.chosen_envi == 'Obstacle Walls':
+        elif self.chosen_envi == 'Obstacle Walls': #Obstacle Walls
             
             # obstacle envi 2
             # Obstacle Wall co ordinates for the maze
+            '''obstacle_coords = [[2,2], [3,2], [4,2], [4,3],
+                [8,2], [8,3], [8,4], [9,4], [10,4],
+                [1,5], [1,6], [2,6], [3,6],
+                [2,9], [3,9], [4,9], [4,10],
+                [7, 7], [7,8], [8,7], [7,9]]'''
             obstacle_coords = [[2,2], [3,2], [3,3], [4,2],
                 [8,0], [8,1], [7,1], 
                 [6,4], [7,4], [8,4],
@@ -125,10 +136,11 @@ class Environment(tk.Tk, object):
 
 
         # Creating an agent of Mobile Robot - red point
-        self.agent = self.canvas_widget.create_oval(
-            self.o[0] - 14, self.o[1] - 14,
-            self.o[0] + 14, self.o[1] + 14,
-            outline='#FF1493', fill='#FF1493')
+        self.agent = self.create_object([0,4], fill_color = 'red')
+        # self.agent = self.canvas_widget.create_oval(
+        #     self.o[0] - 14, self.o[1] - 14,
+        #     self.o[0] + 14, self.o[1] + 14,
+        #     outline='#FF1493', fill='#FF1493')
 
         # Final Point
         '''img_flag = Image.open("images/flag.png")
@@ -136,7 +148,9 @@ class Environment(tk.Tk, object):
         self.flag = self.canvas_widget.create_image(pixels * 11, pixels * 5, anchor='nw', image=self.flag_object)'''
 
         # Final Point - yellow point
-        if self.chosen_envi == 'Cliff Walk':
+        if self.chosen_envi == 'Obstacle':
+            flag_center = self.o + np.array([pixels * 8, pixels * 4])
+        elif self.chosen_envi == 'Cliff Walk':
             flag_center = self.o + np.array([pixels * 11, 0])
         else:
             flag_center = self.o + np.array([pixels * 9, pixels * 9])
@@ -168,12 +182,14 @@ class Environment(tk.Tk, object):
 
         # reset the agent at initial position
         self.canvas_widget.delete(self.agent)
+        self.agent = self.create_object([0,4], fill_color = 'red')
         #self.agent = self.canvas_widget.create_image(0, pixels*5, anchor='nw', image=self.robot)
-        self.agent = self.canvas_widget.create_oval(
-            self.o[0] - 14, self.o[1] - 14,
-            self.o[0] + 14, self.o[1] + 14,
-            outline='red', fill='red')
+        # self.agent = self.canvas_widget.create_oval(
+        #     self.o[0] - 14, self.o[1] - 14,
+        #     self.o[0] + 14, self.o[1] + 14,
+        #     outline='red', fill='red')
         # reset the dictionary and the i
+        
         self.d = {}
         self.i = 0
 
@@ -182,6 +198,7 @@ class Environment(tk.Tk, object):
 
 
      # Function to get the next observation and reward by doing next step
+
     def step(self, action):
         # Current state of the agent
         state = self.canvas_widget.coords(self.agent) 
@@ -196,11 +213,11 @@ class Environment(tk.Tk, object):
                 base_action[1] -= pixels
         # Action 'down'
         elif action == 1:
-            if state[1] < (env_height - 1) * pixels:
+            if state[1] < (self.env_height - 1) * pixels:
                 base_action[1] += pixels
         # Action right
         elif action == 2:
-            if state[0] < (env_width - 1) * pixels:
+            if state[0] < (self.env_width - 1) * pixels:
                 base_action[0] += pixels
         # Action left
         elif action == 3:
@@ -251,7 +268,7 @@ class Environment(tk.Tk, object):
 
         # check if user has chosen obstacle environment, then add obstacle to environment
         
-        elif self.chosen_envi == 'Obstacle' and next_state in [self.canvas_widget.coords(self.obstacle1)]:
+        elif self.chosen_envi == 'Obstacle1' and next_state in self.obstacle_walls:
             reward = -1
             done = True
             next_state = 'obstacle'
@@ -296,16 +313,17 @@ class Environment(tk.Tk, object):
         #print('The longest route:', self.longest)
 
         # Creating initial point
-        #origin = np.array([20, 220])
-        origin = np.array([20, 20])
+        
+        # origin = np.array([20, 20])
+        # self.initial_point = self.canvas_widget.create_oval(
+        #     self.o[0] - 5, self.o[1] - 5,
+        #     self.o[0] + 5, self.o[1] + 5,
+        #     fill='blue', outline='blue')
+        origin = np.array([20, 180])
         self.initial_point = self.canvas_widget.create_oval(
-            self.o[0] - 5, self.o[1] - 5,
-            self.o[0] + 5, self.o[1] + 5,
-            fill='blue', outline='blue')
-        '''self.initial_point = self.canvas_widget.create_oval(
             origin[0] - 5, origin[1] - 5,
             origin[0] + 5, origin[1] + 5,
-            fill='blue', outline='blue')'''
+            fill='blue', outline='blue')
 
         # Filling the route
         for j in range(len(self.f)):
@@ -324,7 +342,15 @@ class Environment(tk.Tk, object):
         time.sleep(1)
         #self.canvas_widget.delete(self.track)
 
-
+    def create_object(self, obstacle_coords, fill_color = 'red'): 
+        obstacle_var = self.o + np.array([pixels* obstacle_coords[0], pixels * obstacle_coords[1]])
+        
+        # Building the obstacle 1
+        return self.canvas_widget.create_oval(
+            obstacle_var[0] - 14, obstacle_var[1] - 14,  # Top left corner
+            obstacle_var[0] + 14, obstacle_var[1] + 14,  # Bottom right corner
+            outline='red', fill= fill_color)
+            
     def obstacle_function(self, obstacle_coords, fill_color = '#00BFFF'):
         
         for i in range(len(obstacle_coords)):
