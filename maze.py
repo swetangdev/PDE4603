@@ -26,6 +26,7 @@ class Environment(tk.Tk, object):
         super(Environment, self).__init__()
         self.actions = ['up','down','left','right']
         self.obstacle_walls = []
+        self.flagLocation = [pixels * 6, pixels * 6]
         
         # using ternary condition check if Algo, Envi options are exist or set it default value
         field['algo'] = 'R-Learning' if 'algo' not in field else field['algo']
@@ -35,17 +36,24 @@ class Environment(tk.Tk, object):
         
         self.title(field['algo'] + ' - Environment')
         
+        
         # set chosen environment
         self.chosen_envi = field['envi']
         
-        if field['envi'] == 'Obstacle':
+        if self.chosen_envi == ''  or self.chosen_envi == envi_options[0] or self.chosen_envi == envi_options[1] or self.chosen_envi == envi_options[2]: # 'Obstacle' 'Obstacle Pipe'
             self.env_height = 9
             self.env_width = 9
-        elif field['envi'] == 'Cliff Walk':
+            if self.chosen_envi == envi_options[2]:
+                self.agentLocation = [0,0]
+            else:
+                self.agentLocation = [0,4]
+        elif self.chosen_envi == 'Cliff Walk':
             self.env_height = 6
+            self.agentLocation = [0,0]
         else:
             self.env_height = 12
             self.env_width = 12
+            self.agentLocation = [0,0]
 
         self.total_env_height = self.env_height * pixels
         self.total_env_width = self.env_width * pixels
@@ -87,10 +95,16 @@ class Environment(tk.Tk, object):
         self.o = np.array([pixels / 2, pixels / 2])
 
         # check if user has chosen obstacle environment, then add obstacle to environment
-        if self.chosen_envi == 'Obstacle':
+        if self.chosen_envi == envi_options[0]: #'Obstacle'
             obstacle_coords = [[4,4]]
             self.obstacle_function(obstacle_coords, '#36b38b')
-        elif self.chosen_envi == 'Obstacle Cross':
+        if self.chosen_envi == envi_options[1]: #'Obstacle Pipe'
+            obstacle_coords = [[4,2], [4,3], [4,4], [4,5], [4,6]]
+            self.obstacle_function(obstacle_coords, '#36b38b')
+        elif self.chosen_envi == envi_options[2]: #'In-Path Obstacle':
+            obstacle_coords = [[0,2], [1,4], [2,1], [2,6], [3,4], [5,2], [4,0], [4,6], [6,4]]
+            self.obstacle_function(obstacle_coords, 'purple')
+        elif self.chosen_envi == envi_options[3]: #'Obstacle Cross':
             #img_obstacle1 = Image.open("images/square.png")
             #self.obstacle1_object = ImageTk.PhotoImage(img_obstacle1)
             #self.obstacle1 = self.canvas_widget.create_image(pixels * 5, pixels * 5, anchor='nw', image=self.obstacle1_object)
@@ -107,7 +121,7 @@ class Environment(tk.Tk, object):
                 [4,11], [5,10], [6,11], [11,7], [11,4]]
             # render obstacle block using dynamic function
             self.obstacle_function(obstacle_coords, '#36b38b')
-        elif self.chosen_envi == 'Obstacle Walls': #Obstacle Walls
+        elif self.chosen_envi == envi_options[4]: #Obstacle Walls
             
             # obstacle envi 2
             # Obstacle Wall co ordinates for the maze
@@ -126,7 +140,7 @@ class Environment(tk.Tk, object):
             # render obstacle block using dynamic function
             self.obstacle_function(obstacle_coords, '#36b38b')
 
-        elif self.chosen_envi == 'Cliff Walk':
+        elif self.chosen_envi == envi_options[5]:
             
             # obstacle envi 2
             # Obstacle Wall co ordinates for the maze
@@ -136,7 +150,7 @@ class Environment(tk.Tk, object):
 
 
         # Creating an agent of Mobile Robot - red point
-        self.agent = self.create_object([0,4], fill_color = 'red')
+        self.agent = self.create_object(self.agentLocation, fill_color = 'red')
         # self.agent = self.canvas_widget.create_oval(
         #     self.o[0] - 14, self.o[1] - 14,
         #     self.o[0] + 14, self.o[1] + 14,
@@ -148,12 +162,12 @@ class Environment(tk.Tk, object):
         self.flag = self.canvas_widget.create_image(pixels * 11, pixels * 5, anchor='nw', image=self.flag_object)'''
 
         # Final Point - yellow point
-        if self.chosen_envi == 'Obstacle':
+        if self.chosen_envi == envi_options[0] or self.chosen_envi == envi_options[1]: # 'Obstacle':
             flag_center = self.o + np.array([pixels * 8, pixels * 4])
-        elif self.chosen_envi == 'Cliff Walk':
+        elif self.chosen_envi == envi_options[5]: #'Cliff Walk':
             flag_center = self.o + np.array([pixels * 11, 0])
         else:
-            flag_center = self.o + np.array([pixels * 9, pixels * 9])
+            flag_center = self.o + np.array(self.flagLocation)
         # Building the flag
         self.flag = self.canvas_widget.create_rectangle(
             flag_center[0] - 20, flag_center[1] - 20,  # Top left corner
@@ -182,7 +196,7 @@ class Environment(tk.Tk, object):
 
         # reset the agent at initial position
         self.canvas_widget.delete(self.agent)
-        self.agent = self.create_object([0,4], fill_color = 'red')
+        self.agent = self.create_object(self.agentLocation, fill_color = 'red')
         #self.agent = self.canvas_widget.create_image(0, pixels*5, anchor='nw', image=self.robot)
         # self.agent = self.canvas_widget.create_oval(
         #     self.o[0] - 14, self.o[1] - 14,
@@ -284,14 +298,6 @@ class Environment(tk.Tk, object):
             # Clearing the dictionary and the i
             self.d = {}
             self.i = 0
-            '''elif self.chosen_envi == 'Cliff Walk' and next_state in self.obstacle_walls:
-                reward = -1
-                done = True
-                next_state = 'obstacle'
-                # Clearing the dictionary and the i
-                self.d = {}
-                self.i = 0'''
-
         else:
             reward = 0
             done = False
@@ -319,7 +325,10 @@ class Environment(tk.Tk, object):
         #     self.o[0] - 5, self.o[1] - 5,
         #     self.o[0] + 5, self.o[1] + 5,
         #     fill='blue', outline='blue')
-        origin = np.array([20, 180])
+        if self.chosen_envi == envi_options[0] or self.chosen_envi == envi_options[1]: # 'Obstacle':
+            origin = np.array([20, 180])
+        else:
+            origin = np.array([20, 20])
         self.initial_point = self.canvas_widget.create_oval(
             origin[0] - 5, origin[1] - 5,
             origin[0] + 5, origin[1] + 5,

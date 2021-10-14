@@ -86,25 +86,21 @@ if __name__ == "__main__":
 
     # Getting and checking user input
     u_choice = user_choice_class()
-    environment_name = u_choice.get_selected_envi()
+    environment_name = u_choice.get_selected_envi() # fetch user selected environment
     
     algorithm_name = 'Q'
     # Calling for the environment
     env = Environment({ 'algo': algorithm_name+'-Learning', 'envi': environment_name})
-    
-    ''' # Calling for the main algorithm
-    RL = QTable(actions=list(range(env.total_actions)))
-    # Running the main loop with Episodes by calling the function exec_update()
-    env.after(100, exec_update(10))  # Or just exec_update()
-    env.mainloop() '''
 
     # execution setting variables
-    max_trials = 5 # 11
+    max_trials = 10 # 11
     num_of_episodes = 1000 # 1000
-    #gamma_array =  [0.9, 0.8, 0.7] #[0.95, 0.93] #
-    #epsilon_array = [0.9, 0.8, 0.7] # [0.95, 0.93]  
-    gamma_array = [0.95, 0.93]
-    epsilon_array = [0.95, 0.93]
+    gamma_array = [0.9, 0.8] # discount factor
+    epsilon_array = [0.9, 0.8, 0.7] # epsilon decay
+    # gamma_array =  [0.6, 0.5] #[0.95, 0.93] #
+    # epsilon_array = [0.6, 0.5] # [0.95, 0.93]  
+    # gamma_array = [0.95, 0.93]
+    # epsilon_array = [0.95, 0.93]
 
     # declaring head_routes_fields as heading in csv
     head_epsilon = ['']
@@ -142,6 +138,7 @@ if __name__ == "__main__":
         trial_time_rows = []
         # for one Gamma run 10 trials
         for trial in range(0, max_trials):
+            print("-- Trial -- ", trial+1)
             short_routes = [] # table 1
             long_routes = [] # table 2
             total_time = [] # table 3

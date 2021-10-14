@@ -9,7 +9,6 @@ from user_choice import user_choice_class
 
 shortest_route = 0
 longest_route = 0
-envi_options = ['no-obstacle', 'Obstacle']
 
 def exec_update(iterations = 1000):
     # Resulted list for the plotting Episodes via Steps
@@ -101,9 +100,10 @@ if __name__ == "__main__":
 
     # execution setting variables
     max_trials =  10 # 11
-    num_of_episodes = 700 #1000
-    gamma_array = [0.9, 0.8]
-    epsilon_array = [0.9, 0.8]
+    num_of_episodes = 1000 #1000
+    gamma_array = [0.9]
+    epsilon_array = [0.87, 0.82, 0.77]
+    
     # gamma_array = [0.95, 0.93]
     # epsilon_array = [0.95, 0.93]
     
@@ -141,6 +141,7 @@ if __name__ == "__main__":
         trial_time_rows = []
         # for one Gamma run 10 trials
         for trial in range(0, max_trials):
+            print("-- Trial -- ", trial)
             short_routes = [] # table 1
             long_routes = [] # table 2
             total_time = [] # table 3
@@ -150,9 +151,9 @@ if __name__ == "__main__":
                 
                 # learning_rate=0.1, reward_decay=0.2, e_greedy=0.2
                 # making Q-table ready for exploration
-                RL = SarsaTable( actions=list(range(env.total_actions)), gamma = gamma_array[gamma_item], epsilon = epsilon_array[epsilon_item], learning_rate=0.1 )
+                RL = SarsaTable( actions=list(range(env.total_actions)), gamma = gamma_array[gamma_item], epsilon = epsilon_array[epsilon_item], learning_rate=0.8 )
 
-                time.sleep(1.5)                
+                               
                 # Running the main loop with Episodes by calling the function exec_update()
                 short_route, long_route, final_q_table, full_q_table, total_time_taken = exec_update(num_of_episodes)
                 

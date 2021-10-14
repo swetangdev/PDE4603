@@ -1,4 +1,4 @@
-envi_options = ['Obstacle','Obstacle Cross', 'Obstacle Walls', 'Cliff Walk']
+envi_options = ['Obstacle', 'Obstacle Pipe', 'In-Path Obstacle','Obstacle Cross', 'Obstacle Walls', 'Cliff Walk']
 class user_choice_class:
     def __init__(self):
         self.user_input = 1
@@ -13,7 +13,7 @@ class user_choice_class:
                 print("Sorry, I didn't understand that.")
                 continue
             
-            if self.user_input > 3 or self.user_input < 0:
+            if self.user_input > len(envi_options) or self.user_input < 0:
                 print("Sorry, please choose between 0 and 4.")
                 continue
             elif self.user_input == 0:
@@ -24,6 +24,7 @@ class user_choice_class:
     # ask user for choose an enviornment
     def get_user_input(self):
         print('Please enter your choice for environment')
+        
         print('0 Exit')
         for env_item in range(len(envi_options)):
             print((env_item+1),envi_options[env_item])
