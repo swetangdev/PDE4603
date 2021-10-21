@@ -1,4 +1,4 @@
-# PDE4603 Thesis - Analysis on Q-Learning and SARSA algorithm
+# PDE4603 Thesis - Comparison analysis of Reinforcement Learning Algorithms (Q-learning and SARSA) for global path planning
 
 - The model-free reinforcement learning algorithms, Q-Learning and SARSA do not need the knowledge of the environment. In Q-learning, Q means Quality, the main goal is to guide an agent to learn quality actions and help agent to decide what action to be taken in a scenario. SARSA is different than Q-learning, in which it does not focus on maximum reward for next state rather it continues to follow same policy for every transition. In this section, four different environments are used for the comparison of Q-Learning and SARSA algorithms with the number of experimental trials.
 - The environments used here are from single obstacle in single path, vertically stacked obstacles in the single path, obstacle in the individual possible paths and cliff-walking environment. There are 1000 episodes run for each experiment.
