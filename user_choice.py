@@ -1,3 +1,4 @@
+# list of environments, first three as used for the analysis
 envi_options = ['Obstacle', 'Obstacle Pipe', 'In-Path Obstacle','Obstacle Cross', 'Obstacle Walls', 'Cliff Walk']
 class user_choice_class:
     def __init__(self):

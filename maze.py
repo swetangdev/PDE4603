@@ -49,6 +49,7 @@ class Environment(tk.Tk, object):
                 self.agentLocation = [0,4]
         elif self.chosen_envi == 'Cliff Walk':
             self.env_height = 6
+            self.env_width = 12
             self.agentLocation = [0,0]
         else:
             self.env_height = 12
@@ -254,7 +255,10 @@ class Environment(tk.Tk, object):
         #if next_state == self.canvas_widget.coords(self.flag):
         if next_state == self.coords_flag:
         
-            reward = 1
+            if(self.chosen_envi == envi_options[5]): # cliff walk
+                reward = 10
+            else:
+                reward = 1
             done = True
             next_state = 'goal'
 
@@ -280,26 +284,23 @@ class Environment(tk.Tk, object):
             if len(self.d) > self.longest:
                 self.longest = len(self.d)
 
-        # check if user has chosen obstacle environment, then add obstacle to environment
-        
-        elif self.chosen_envi == 'Obstacle1' and next_state in self.obstacle_walls:
-            reward = -1
-            done = True
-            next_state = 'obstacle'
-            print(self.canvas_widget.coords(self.obstacle1))
-            # Clearing the dictionary and the i
-            self.d = {}
-            self.i = 0
-
+        # check if user has chosen obstacle environment, then update reward
         elif self.chosen_envi in envi_options and next_state in self.obstacle_walls:
-            reward = -1
+            if(self.chosen_envi == envi_options[5]): # cliff walk
+                reward = -100
+            else:
+                reward = -1
+
             done = True
             next_state = 'obstacle'
             # Clearing the dictionary and the i
             self.d = {}
             self.i = 0
         else:
-            reward = 0
+            if(self.chosen_envi == envi_options[5]): # cliff walk
+                reward = -1
+            else:
+                reward = 0
             done = False
         return next_state, reward, done
 
@@ -351,22 +352,24 @@ class Environment(tk.Tk, object):
         time.sleep(1)
         #self.canvas_widget.delete(self.track)
 
+    # function to create and add agent in maze 
     def create_object(self, obstacle_coords, fill_color = 'red'): 
         obstacle_var = self.o + np.array([pixels* obstacle_coords[0], pixels * obstacle_coords[1]])
         
-        # Building the obstacle 1
+        # Building the agent
         return self.canvas_widget.create_oval(
             obstacle_var[0] - 14, obstacle_var[1] - 14,  # Top left corner
             obstacle_var[0] + 14, obstacle_var[1] + 14,  # Bottom right corner
             outline='red', fill= fill_color)
-            
+
+    # function to create obstacle in the maze          
     def obstacle_function(self, obstacle_coords, fill_color = '#00BFFF'):
         
         for i in range(len(obstacle_coords)):
                 
             obstacle_var = self.o + np.array([pixels* obstacle_coords[i][0], pixels * obstacle_coords[i][1]])
             
-            # Building the obstacle 1
+            # Building the obstacle
             obstacle = self.canvas_widget.create_rectangle(
                 obstacle_var[0] - 20, obstacle_var[1] - 20,  # Top left corner
                 obstacle_var[0] + 20, obstacle_var[1] + 20,  # Bottom right corner

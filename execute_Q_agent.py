@@ -93,15 +93,15 @@ if __name__ == "__main__":
     env = Environment({ 'algo': algorithm_name+'-Learning', 'envi': environment_name})
 
     # execution setting variables
-    max_trials = 10 # 11
+    max_trials = 5 # 11
     num_of_episodes = 1000 # 1000
-    gamma_array = [0.9, 0.8] # discount factor
-    epsilon_array = [0.9, 0.8, 0.7] # epsilon decay
-    # gamma_array =  [0.6, 0.5] #[0.95, 0.93] #
-    # epsilon_array = [0.6, 0.5] # [0.95, 0.93]  
-    # gamma_array = [0.95, 0.93]
-    # epsilon_array = [0.95, 0.93]
+    gamma_array = [0.85] # discount factor
+    epsilon_array = [0.9, 0.8] # epsilon decay
 
+    learning_rate = 0.01
+    if(environment_name == 'Cliff Walk'):
+        learning_rate = 0.5
+         
     # declaring head_routes_fields as heading in csv
     head_epsilon = ['']
     
@@ -147,7 +147,7 @@ if __name__ == "__main__":
                 print(gamma_array[gamma_item], epsilon_array[epsilon_item])
                 
                 # making Q-table ready for exploration
-                RL = QTable( actions=list(range(env.total_actions)), gamma = gamma_array[gamma_item], epsilon = epsilon_array[epsilon_item] )
+                RL = QTable( actions=list(range(env.total_actions)), gamma = gamma_array[gamma_item], epsilon = epsilon_array[epsilon_item], learning_rate = learning_rate)
                 
                 time.sleep(1.5)
                 # Running the main loop with Episodes by calling the function exec_update()

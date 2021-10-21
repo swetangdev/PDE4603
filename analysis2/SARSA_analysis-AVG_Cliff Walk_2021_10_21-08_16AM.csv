@@ -1,0 +1,14 @@
+,SARSA Learning Algorithm,Episodes:1000,Cliff Walk
+
+,Shortest Path
+X-X-X-X,0.87,0.77,0.67
+0.9,15.0,15.0,15.0
+
+,Longest Path
+X-X-X-X,0.87,0.77,0.67
+0.9,1370.0,1539.2,1539.2
+
+,Total time
+X-X-X-X,0.87,0.77,0.67
+0.9,0:00:42.467621,0:00:51.268221,0:00:55.080939
+

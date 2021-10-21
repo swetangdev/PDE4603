@@ -99,14 +99,15 @@ if __name__ == "__main__":
     env = Environment({ 'algo': algorithm_name+'-Learning', 'envi': environment_name})
 
     # execution setting variables
-    max_trials =  10 # 11
+    max_trials =  5 # 11
     num_of_episodes = 1000 #1000
     gamma_array = [0.9]
-    epsilon_array = [0.87, 0.82, 0.77]
-    
-    # gamma_array = [0.95, 0.93]
-    # epsilon_array = [0.95, 0.93]
-    
+    epsilon_array = [0.87, 0.77, 0.67]
+
+    learning_rate = 0.8
+    if(environment_name == 'Cliff Walk'):
+        learning_rate = 0.5
+
     # declaring head_routes_fields as heading in csv
     head_epsilon = ['']
 
@@ -151,7 +152,7 @@ if __name__ == "__main__":
                 
                 # learning_rate=0.1, reward_decay=0.2, e_greedy=0.2
                 # making Q-table ready for exploration
-                RL = SarsaTable( actions=list(range(env.total_actions)), gamma = gamma_array[gamma_item], epsilon = epsilon_array[epsilon_item], learning_rate=0.8 )
+                RL = SarsaTable( actions=list(range(env.total_actions)), gamma = gamma_array[gamma_item], epsilon = epsilon_array[epsilon_item], learning_rate= learning_rate )
 
                                
                 # Running the main loop with Episodes by calling the function exec_update()
