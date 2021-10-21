@@ -38,7 +38,11 @@ After selecting environment it will start executing experiment trials (10 trials
 At the end of execution it will generate two CSV files: 
  - For example: 
     - SARSA_analysis_{envi_name}_{date-time}.csv
+      - <img src="https://user-images.githubusercontent.com/46344128/138365579-8ab25bf5-d2c9-4e87-850f-a7b8317dec88.png" width="600" height="600" />
     - SARSA_analysis-AVG_{envi_name}_{date-time}.csv
+      - <img src="https://user-images.githubusercontent.com/46344128/138365725-cca1de7c-db82-4904-aa92-d773d84ad0c5.png" width="300" />
+
+
 
 ----------------------------------
 
