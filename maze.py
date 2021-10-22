@@ -105,43 +105,43 @@ class Environment(tk.Tk, object):
         elif self.chosen_envi == envi_options[2]: #'In-Path Obstacle':
             obstacle_coords = [[0,2], [1,4], [2,1], [2,6], [3,4], [5,2], [4,0], [4,6], [6,4]]
             self.obstacle_function(obstacle_coords, 'purple')
-        elif self.chosen_envi == envi_options[3]: #'Obstacle Cross':
-            #img_obstacle1 = Image.open("images/square.png")
-            #self.obstacle1_object = ImageTk.PhotoImage(img_obstacle1)
-            #self.obstacle1 = self.canvas_widget.create_image(pixels * 5, pixels * 5, anchor='nw', image=self.obstacle1_object)
+        # elif self.chosen_envi == envi_options[3]: #'Obstacle Cross':
+        #     #img_obstacle1 = Image.open("images/square.png")
+        #     #self.obstacle1_object = ImageTk.PhotoImage(img_obstacle1)
+        #     #self.obstacle1 = self.canvas_widget.create_image(pixels * 5, pixels * 5, anchor='nw', image=self.obstacle1_object)
 
-            # obstacle envi 2
-            # Obstacle Wall co ordinates for the maze
-            '''obstacle_coords = [ [8,2], [9,3],
-                [4,1], [3,2], [5,5], [6,4],
-                [9,6], [6,7], [7,8], [1,7], [2,6],
-                [5,10], [6,11], [10,7]]'''
-            obstacle_coords = [[5,1], [8,2], [9,3], [9,1], [10,2],
-                [1,2], [2,4], [1,5], [2,3], [5,5], [6,4],
-                [9,6], [6,7], [7,8], [2,8], [3,7],
-                [4,11], [5,10], [6,11], [11,7], [11,4]]
-            # render obstacle block using dynamic function
-            self.obstacle_function(obstacle_coords, '#36b38b')
-        elif self.chosen_envi == envi_options[4]: #Obstacle Walls
+        #     # obstacle envi 2
+        #     # Obstacle Wall co ordinates for the maze
+        #     '''obstacle_coords = [ [8,2], [9,3],
+        #         [4,1], [3,2], [5,5], [6,4],
+        #         [9,6], [6,7], [7,8], [1,7], [2,6],
+        #         [5,10], [6,11], [10,7]]'''
+        #     obstacle_coords = [[5,1], [8,2], [9,3], [9,1], [10,2],
+        #         [1,2], [2,4], [1,5], [2,3], [5,5], [6,4],
+        #         [9,6], [6,7], [7,8], [2,8], [3,7],
+        #         [4,11], [5,10], [6,11], [11,7], [11,4]]
+        #     # render obstacle block using dynamic function
+        #     self.obstacle_function(obstacle_coords, '#36b38b')
+        # elif self.chosen_envi == envi_options[4]: #Obstacle Walls
             
-            # obstacle envi 2
-            # Obstacle Wall co ordinates for the maze
-            '''obstacle_coords = [[2,2], [3,2], [4,2], [4,3],
-                [8,2], [8,3], [8,4], [9,4], [10,4],
-                [1,5], [1,6], [2,6], [3,6],
-                [2,9], [3,9], [4,9], [4,10],
-                [7, 7], [7,8], [8,7], [7,9]]'''
-            obstacle_coords = [[2,2], [3,2], [3,3], [4,2],
-                [8,0], [8,1], [7,1], 
-                [6,4], [7,4], [8,4],
-                [2,6], [3,6],
-                [4,10], [4,11], 
-                [1,9],
-                [7, 7], [7,8], [8,7], [7,9], [10,7]]
-            # render obstacle block using dynamic function
-            self.obstacle_function(obstacle_coords, '#36b38b')
+        #     # obstacle envi 2
+        #     # Obstacle Wall co ordinates for the maze
+        #     '''obstacle_coords = [[2,2], [3,2], [4,2], [4,3],
+        #         [8,2], [8,3], [8,4], [9,4], [10,4],
+        #         [1,5], [1,6], [2,6], [3,6],
+        #         [2,9], [3,9], [4,9], [4,10],
+        #         [7, 7], [7,8], [8,7], [7,9]]'''
+        #     obstacle_coords = [[2,2], [3,2], [3,3], [4,2],
+        #         [8,0], [8,1], [7,1], 
+        #         [6,4], [7,4], [8,4],
+        #         [2,6], [3,6],
+        #         [4,10], [4,11], 
+        #         [1,9],
+        #         [7, 7], [7,8], [8,7], [7,9], [10,7]]
+        #     # render obstacle block using dynamic function
+        #     self.obstacle_function(obstacle_coords, '#36b38b')
 
-        elif self.chosen_envi == envi_options[5]:
+        elif self.chosen_envi == envi_options[3]:
             
             # obstacle envi 2
             # Obstacle Wall co ordinates for the maze
@@ -165,7 +165,7 @@ class Environment(tk.Tk, object):
         # Final Point - yellow point
         if self.chosen_envi == envi_options[0] or self.chosen_envi == envi_options[1]: # 'Obstacle':
             flag_center = self.o + np.array([pixels * 8, pixels * 4])
-        elif self.chosen_envi == envi_options[5]: #'Cliff Walk':
+        elif self.chosen_envi == envi_options[3]: #'Cliff Walk':
             flag_center = self.o + np.array([pixels * 11, 0])
         else:
             flag_center = self.o + np.array(self.flagLocation)
@@ -255,7 +255,7 @@ class Environment(tk.Tk, object):
         #if next_state == self.canvas_widget.coords(self.flag):
         if next_state == self.coords_flag:
         
-            if(self.chosen_envi == envi_options[5]): # cliff walk
+            if(self.chosen_envi == envi_options[3]): # cliff walk
                 reward = 10
             else:
                 reward = 1
@@ -286,7 +286,7 @@ class Environment(tk.Tk, object):
 
         # check if user has chosen obstacle environment, then update reward
         elif self.chosen_envi in envi_options and next_state in self.obstacle_walls:
-            if(self.chosen_envi == envi_options[5]): # cliff walk
+            if(self.chosen_envi == envi_options[3]): # cliff walk
                 reward = -100
             else:
                 reward = -1
@@ -297,7 +297,7 @@ class Environment(tk.Tk, object):
             self.d = {}
             self.i = 0
         else:
-            if(self.chosen_envi == envi_options[5]): # cliff walk
+            if(self.chosen_envi == envi_options[3]): # cliff walk
                 reward = -1
             else:
                 reward = 0
