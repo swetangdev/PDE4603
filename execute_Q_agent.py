@@ -149,7 +149,6 @@ if __name__ == "__main__":
                 # making Q-table ready for exploration
                 RL = QTable( actions=list(range(env.total_actions)), gamma = gamma_array[gamma_item], epsilon = epsilon_array[epsilon_item], learning_rate = learning_rate)
                 
-                time.sleep(1.5)
                 # Running the main loop with Episodes by calling the function exec_update()
                 #env.after(100, exec_update(10))  # Or just exec_update()
                 short_route, long_route, final_q_table, full_q_table, total_time_taken = exec_update(num_of_episodes)
