@@ -95,12 +95,12 @@ if __name__ == "__main__":
     # execution setting variables
     max_trials = 5 # 11
     num_of_episodes = 1000 # 1000
-    gamma_array = [0.85] # discount factor
+    gamma_array = [0.9, 0.8] # discount factor
     epsilon_array = [0.9, 0.8] # epsilon decay
 
     learning_rate = 0.01
     if(environment_name == 'Cliff Walk'):
-        learning_rate = 0.5
+        learning_rate = 0.1
          
     # declaring head_routes_fields as heading in csv
     head_epsilon = ['']
